@@ -4,6 +4,14 @@ import TerminalSelect from './TerminalSelect';
 import ActionButton from './ActionButton';
 import ProgressBar from './ProgressBar';
 import TerminalOutput from './TerminalOutput';
+import { 
+  playBeep, 
+  playSuccessBeep, 
+  playWarningBeep, 
+  playErrorAlarm, 
+  playDataSound,
+  playBootSound 
+} from '@/lib/sounds';
 
 const OPERATION_TYPES = [
   { value: 'gps', label: 'Rastrear Localização GPS' },
@@ -13,33 +21,50 @@ const OPERATION_TYPES = [
 ];
 
 const FAKE_TERMINAL_LINES = [
-  '[*] Inicializando conexão segura...',
-  '[+] Conectando ao nó seguro 192.168.45.127...',
-  '[+] Handshake SSL estabelecido',
-  '[*] Verificando credenciais de acesso...',
-  '[!] Bypassing firewall corporativo...',
-  '[+] Firewall bypassed com sucesso',
-  '[*] Acessando servidor proxy 10.0.0.45...',
-  '[+] Rota alternativa estabelecida',
-  '[!] Injetando exploit CVE-2024-1337...',
-  '[*] Aguardando resposta do servidor...',
-  '[+] Exploit injetado com sucesso',
-  '[*] Triangulando sinal de GPS...',
-  '[+] Satélite NORAD-7 conectado',
-  '[*] Descriptografando pacotes de dados...',
-  '[!] Baixando pacotes criptografados [15%]...',
-  '[+] Baixando pacotes criptografados [32%]...',
-  '[*] Baixando pacotes criptografados [47%]...',
-  '[+] Baixando pacotes criptografados [63%]...',
-  '[!] Baixando pacotes criptografados [78%]...',
-  '[+] Baixando pacotes criptografados [89%]...',
-  '[*] Baixando pacotes criptografados [95%]...',
-  '[+] Baixando pacotes criptografados [99%]...',
-  '[!] Verificando integridade dos dados...',
-  '[*] Processando informações do alvo...',
-  '[+] Acessando banco de dados central...',
-  '[*] Consultando registros classificados...',
+  { text: '[*] Inicializando conexão segura...', sound: 'beep' },
+  { text: '[+] Conectando ao nó seguro 192.168.45.127...', sound: 'success' },
+  { text: '[+] Handshake SSL estabelecido', sound: 'success' },
+  { text: '[*] Verificando credenciais de acesso...', sound: 'beep' },
+  { text: '[!] Bypassing firewall corporativo...', sound: 'warning' },
+  { text: '[+] Firewall bypassed com sucesso', sound: 'success' },
+  { text: '[*] Acessando servidor proxy 10.0.0.45...', sound: 'beep' },
+  { text: '[+] Rota alternativa estabelecida', sound: 'success' },
+  { text: '[!] Injetando exploit CVE-2024-1337...', sound: 'warning' },
+  { text: '[*] Aguardando resposta do servidor...', sound: 'beep' },
+  { text: '[+] Exploit injetado com sucesso', sound: 'success' },
+  { text: '[*] Triangulando sinal de GPS...', sound: 'beep' },
+  { text: '[+] Satélite NORAD-7 conectado', sound: 'success' },
+  { text: '[*] Descriptografando pacotes de dados...', sound: 'data' },
+  { text: '[!] Baixando pacotes criptografados [15%]...', sound: 'data' },
+  { text: '[+] Baixando pacotes criptografados [32%]...', sound: 'data' },
+  { text: '[*] Baixando pacotes criptografados [47%]...', sound: 'data' },
+  { text: '[+] Baixando pacotes criptografados [63%]...', sound: 'data' },
+  { text: '[!] Baixando pacotes criptografados [78%]...', sound: 'data' },
+  { text: '[+] Baixando pacotes criptografados [89%]...', sound: 'data' },
+  { text: '[*] Baixando pacotes criptografados [95%]...', sound: 'data' },
+  { text: '[+] Baixando pacotes criptografados [99%]...', sound: 'data' },
+  { text: '[!] Verificando integridade dos dados...', sound: 'warning' },
+  { text: '[*] Processando informações do alvo...', sound: 'beep' },
+  { text: '[+] Acessando banco de dados central...', sound: 'success' },
+  { text: '[*] Consultando registros classificados...', sound: 'beep' },
 ];
+
+const playLineSound = (sound: string) => {
+  switch (sound) {
+    case 'beep':
+      playBeep();
+      break;
+    case 'success':
+      playSuccessBeep();
+      break;
+    case 'warning':
+      playWarningBeep();
+      break;
+    case 'data':
+      playDataSound();
+      break;
+  }
+};
 
 const SurveillancePanel = () => {
   const [targetName, setTargetName] = useState('');
@@ -53,6 +78,9 @@ const SurveillancePanel = () => {
   const startProtocol = useCallback(() => {
     if (!targetName.trim()) return;
 
+    // Play boot sound when starting
+    playBootSound();
+
     setIsProcessing(true);
     setTerminalLines([]);
     setProgress(0);
@@ -60,9 +88,19 @@ const SurveillancePanel = () => {
     setShowError(false);
 
     // Initial line with target info
-    setTerminalLines([`[+] ALVO IDENTIFICADO: ${targetName.toUpperCase()}`]);
-    setTerminalLines(prev => [...prev, `[*] OPERAÇÃO: ${OPERATION_TYPES.find(o => o.value === operationType)?.label}`]);
-    setTerminalLines(prev => [...prev, '']);
+    setTimeout(() => {
+      playSuccessBeep();
+      setTerminalLines([`[+] ALVO IDENTIFICADO: ${targetName.toUpperCase()}`]);
+    }, 300);
+    
+    setTimeout(() => {
+      playBeep();
+      setTerminalLines(prev => [...prev, `[*] OPERAÇÃO: ${OPERATION_TYPES.find(o => o.value === operationType)?.label}`]);
+    }, 600);
+    
+    setTimeout(() => {
+      setTerminalLines(prev => [...prev, '']);
+    }, 800);
 
     let lineIndex = 0;
     const totalDuration = 10000; // 10 seconds
@@ -70,7 +108,9 @@ const SurveillancePanel = () => {
 
     const lineTimer = setInterval(() => {
       if (lineIndex < FAKE_TERMINAL_LINES.length) {
-        setTerminalLines(prev => [...prev, FAKE_TERMINAL_LINES[lineIndex]]);
+        const line = FAKE_TERMINAL_LINES[lineIndex];
+        playLineSound(line.sound);
+        setTerminalLines(prev => [...prev, line.text]);
         lineIndex++;
       }
     }, lineInterval);
@@ -91,6 +131,8 @@ const SurveillancePanel = () => {
       setShowProgress(false);
       setIsProcessing(false);
       setShowError(true);
+      // Play error alarm
+      playErrorAlarm();
     }, totalDuration);
   }, [targetName, operationType]);
 
