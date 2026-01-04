@@ -2,74 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 0%;
-    --foreground: 120 100% 50%;
+    --background: 0 0% 2%;
+    --foreground: 120 100% 55%;
 
-    --card: 0 0% 3%;
-    --card-foreground: 120 100% 50%;
+    --card: 0 0% 4%;
+    --card-foreground: 120 100% 55%;
 
-    --popover: 0 0% 3%;
-    --popover-foreground: 120 100% 50%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 120 100% 55%;
 
-    --primary: 120 100% 50%;
+    --primary: 120 100% 55%;
     --primary-foreground: 0 0% 0%;
 
-    --secondary: 180 100% 50%;
+    --secondary: 187 100% 45%;
     --secondary-foreground: 0 0% 0%;
 
-    --muted: 120 100% 10%;
+    --muted: 120 100% 8%;
     --muted-foreground: 120 100% 35%;
 
-    --accent: 180 100% 50%;
+    --accent: 187 100% 45%;
     --accent-foreground: 0 0% 0%;
 
     --destructive: 0 100% 50%;
-    --destructive-foreground: 0 0% 0%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 120 100% 25%;
-    --input: 120 100% 15%;
-    --ring: 120 100% 50%;
+    --warning: 45 100% 50%;
+    --warning-foreground: 0 0% 0%;
+
+    --border: 120 100% 20%;
+    --input: 120 100% 12%;
+    --ring: 120 100% 55%;
 
     --radius: 0px;
 
-    --glow-primary: 0 0 10px hsl(120 100% 50%), 0 0 20px hsl(120 100% 50% / 0.5), 0 0 30px hsl(120 100% 50% / 0.3);
-    --glow-secondary: 0 0 10px hsl(180 100% 50%), 0 0 20px hsl(180 100% 50% / 0.5);
+    --glow-primary: 0 0 10px hsl(120 100% 55%), 0 0 20px hsl(120 100% 55% / 0.5), 0 0 30px hsl(120 100% 55% / 0.3);
+    --glow-secondary: 0 0 10px hsl(187 100% 45%), 0 0 20px hsl(187 100% 45% / 0.5);
     --glow-destructive: 0 0 10px hsl(0 100% 50%), 0 0 20px hsl(0 100% 50% / 0.5);
+    --glow-warning: 0 0 10px hsl(45 100% 50%), 0 0 20px hsl(45 100% 50% / 0.5);
 
-    --sidebar-background: 0 0% 0%;
-    --sidebar-foreground: 120 100% 50%;
-    --sidebar-primary: 120 100% 50%;
+    --sidebar-background: 0 0% 3%;
+    --sidebar-foreground: 120 100% 55%;
+    --sidebar-primary: 120 100% 55%;
     --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 120 100% 10%;
-    --sidebar-accent-foreground: 120 100% 50%;
-    --sidebar-border: 120 100% 25%;
-    --sidebar-ring: 120 100% 50%;
+    --sidebar-accent: 120 100% 8%;
+    --sidebar-accent-foreground: 120 100% 55%;
+    --sidebar-border: 120 100% 15%;
+    --sidebar-ring: 120 100% 55%;
   }
 
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 120 100% 50%;
-    --card: 0 0% 3%;
-    --card-foreground: 120 100% 50%;
-    --popover: 0 0% 3%;
-    --popover-foreground: 120 100% 50%;
-    --primary: 120 100% 50%;
+    --background: 0 0% 2%;
+    --foreground: 120 100% 55%;
+    --card: 0 0% 4%;
+    --card-foreground: 120 100% 55%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 120 100% 55%;
+    --primary: 120 100% 55%;
     --primary-foreground: 0 0% 0%;
-    --secondary: 180 100% 50%;
+    --secondary: 187 100% 45%;
     --secondary-foreground: 0 0% 0%;
-    --muted: 120 100% 10%;
+    --muted: 120 100% 8%;
     --muted-foreground: 120 100% 35%;
-    --accent: 180 100% 50%;
+    --accent: 187 100% 45%;
     --accent-foreground: 0 0% 0%;
     --destructive: 0 100% 50%;
-    --destructive-foreground: 0 0% 0%;
-    --border: 120 100% 25%;
-    --input: 120 100% 15%;
-    --ring: 120 100% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 120 100% 15%;
+    --input: 120 100% 12%;
+    --ring: 120 100% 55%;
   }
 }
 
@@ -79,13 +83,13 @@
   }
 
   body {
-    @apply bg-background text-foreground font-mono;
-    font-family: 'IBM Plex Mono', monospace;
+    @apply bg-background text-foreground;
+    font-family: 'Fira Code', monospace;
   }
 }
 
-/* Scanlines overlay effect */
 @layer utilities {
+  /* Scanlines overlay */
   .scanlines {
     position: relative;
   }
@@ -101,8 +105,8 @@
       0deg,
       transparent,
       transparent 2px,
-      hsl(120 100% 50% / 0.03) 2px,
-      hsl(120 100% 50% / 0.03) 4px
+      hsl(120 100% 55% / 0.02) 2px,
+      hsl(120 100% 55% / 0.02) 4px
     );
     pointer-events: none;
     z-index: 1000;
@@ -115,11 +119,12 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(ellipse at center, transparent 0%, hsl(0 0% 0% / 0.3) 100%);
+    background: radial-gradient(ellipse at center, transparent 0%, hsl(0 0% 0% / 0.4) 100%);
     pointer-events: none;
     z-index: 999;
   }
 
+  /* Glow effects */
   .text-glow {
     text-shadow: var(--glow-primary);
   }
@@ -130,83 +135,94 @@
 
   .text-glow-destructive {
     text-shadow: var(--glow-destructive);
-    animation: pulse-glow 1s ease-in-out infinite;
+  }
+
+  .text-glow-warning {
+    text-shadow: var(--glow-warning);
   }
 
   .border-glow {
-    box-shadow: var(--glow-primary), inset 0 0 20px hsl(120 100% 50% / 0.1);
+    box-shadow: var(--glow-primary), inset 0 0 20px hsl(120 100% 55% / 0.05);
   }
 
   .border-glow-secondary {
-    box-shadow: var(--glow-secondary);
+    box-shadow: var(--glow-secondary), inset 0 0 20px hsl(187 100% 45% / 0.05);
   }
 
+  .border-glow-destructive {
+    box-shadow: var(--glow-destructive);
+  }
+
+  .border-glow-warning {
+    box-shadow: var(--glow-warning);
+  }
+
+  /* Angular/cut corners */
+  .cut-corners {
+    clip-path: polygon(
+      0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px,
+      100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px)
+    );
+  }
+
+  .cut-corners-sm {
+    clip-path: polygon(
+      0 6px, 6px 0, calc(100% - 6px) 0, 100% 6px,
+      100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px)
+    );
+  }
+
+  .cut-corners-lg {
+    clip-path: polygon(
+      0 15px, 15px 0, calc(100% - 15px) 0, 100% 15px,
+      100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px)
+    );
+  }
+
+  /* Animations */
   @keyframes pulse-glow {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.5;
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
   }
 
   @keyframes blink {
-    0%, 50% {
-      opacity: 1;
-    }
-    51%, 100% {
-      opacity: 0;
-    }
-  }
-
-  @keyframes typewriter {
-    from {
-      width: 0;
-    }
-    to {
-      width: 100%;
-    }
-  }
-
-  @keyframes matrix-rain {
-    0% {
-      transform: translateY(-100%);
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(100vh);
-      opacity: 0;
-    }
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
   }
 
   @keyframes flicker {
-    0%, 100% {
+    0%, 100% { opacity: 1; }
+    92% { opacity: 1; }
+    93% { opacity: 0.8; }
+    94% { opacity: 1; }
+    96% { opacity: 0.9; }
+    97% { opacity: 1; }
+  }
+
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  @keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+
+  @keyframes data-pulse {
+    0%, 100% { 
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    50% { 
       opacity: 1;
-    }
-    92% {
-      opacity: 1;
-    }
-    93% {
-      opacity: 0.8;
-    }
-    94% {
-      opacity: 1;
-    }
-    96% {
-      opacity: 0.9;
-    }
-    97% {
-      opacity: 1;
+      transform: scale(1.05);
     }
   }
 
-  @keyframes progress-glow {
-    0%, 100% {
-      box-shadow: 0 0 5px hsl(120 100% 50%), 0 0 10px hsl(120 100% 50% / 0.5);
-    }
-    50% {
-      box-shadow: 0 0 15px hsl(120 100% 50%), 0 0 25px hsl(120 100% 50% / 0.7);
-    }
+  @keyframes coordinates {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
   }
 
   .animate-blink {
@@ -217,19 +233,96 @@
     animation: flicker 4s linear infinite;
   }
 
-  .animate-progress-glow {
-    animation: progress-glow 1s ease-in-out infinite;
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
   }
 
-  .pixelated-border {
-    border: 2px solid hsl(var(--primary));
-    box-shadow: 
-      4px 4px 0 0 hsl(120 100% 30%),
-      inset 0 0 20px hsl(120 100% 50% / 0.1);
+  .animate-data-pulse {
+    animation: data-pulse 2s ease-in-out infinite;
   }
 
+  .animate-coordinates {
+    animation: coordinates 0.5s ease-in-out infinite;
+  }
+
+  /* Module card styles */
+  .module-card {
+    @apply relative bg-card border border-border p-4;
+    background: linear-gradient(135deg, hsl(0 0% 4%) 0%, hsl(0 0% 2%) 100%);
+  }
+
+  .module-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, hsl(120 100% 55%), transparent);
+  }
+
+  /* Terminal text style */
   .terminal-text {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'Fira Code', monospace;
     line-height: 1.6;
+  }
+
+  /* Button styles */
+  .btn-cyber {
+    @apply relative px-6 py-3 font-mono text-sm uppercase tracking-wider font-bold;
+    @apply border-2 transition-all duration-300;
+    @apply cut-corners-sm;
+  }
+
+  .btn-cyber-primary {
+    @apply btn-cyber bg-primary/10 border-primary text-primary;
+    @apply hover:bg-primary hover:text-background;
+    box-shadow: var(--glow-primary);
+  }
+
+  .btn-cyber-secondary {
+    @apply btn-cyber bg-secondary/10 border-secondary text-secondary;
+    @apply hover:bg-secondary hover:text-background;
+    box-shadow: var(--glow-secondary);
+  }
+
+  .btn-cyber-destructive {
+    @apply btn-cyber bg-destructive/10 border-destructive text-destructive;
+    box-shadow: var(--glow-destructive);
+  }
+
+  .btn-cyber-warning {
+    @apply btn-cyber bg-warning/10 border-warning text-warning;
+    box-shadow: var(--glow-warning);
+  }
+
+  /* Input styles */
+  .input-cyber {
+    @apply w-full bg-background border-2 border-primary px-4 py-3;
+    @apply text-primary font-mono text-sm;
+    @apply placeholder:text-muted-foreground;
+    @apply focus:outline-none focus:border-secondary;
+    @apply transition-all duration-300;
+    box-shadow: var(--glow-primary);
+  }
+
+  /* Status indicator */
+  .status-dot {
+    @apply inline-block w-2 h-2 rounded-full;
+  }
+
+  .status-dot-active {
+    @apply status-dot bg-primary animate-pulse;
+    box-shadow: 0 0 10px hsl(120 100% 55%);
+  }
+
+  .status-dot-warning {
+    @apply status-dot bg-warning animate-pulse;
+    box-shadow: 0 0 10px hsl(45 100% 50%);
+  }
+
+  .status-dot-error {
+    @apply status-dot bg-destructive animate-pulse;
+    box-shadow: 0 0 10px hsl(0 100% 50%);
   }
 }
