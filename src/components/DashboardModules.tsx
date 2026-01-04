@@ -172,20 +172,52 @@ const WhatsAppSearchModule = () => {
   if (searchState === 'blocked') {
     return (
       <div className="module-card cut-corners-lg h-full flex flex-col relative overflow-hidden">
+        {/* Animated warning border */}
+        <div className="absolute inset-0 border-2 border-destructive animate-border-pulse pointer-events-none z-20" />
+        
+        {/* Scanline effect */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-15">
+          <div className="absolute inset-x-0 h-1 bg-destructive/30 animate-scan-line" />
+        </div>
+        
         {/* Blocked overlay */}
         <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6">
+          {/* Warning icon with effects */}
           <div className="relative mb-4">
-            <ShieldX className="w-16 h-16 text-destructive animate-pulse" />
+            <div className="absolute inset-0 w-20 h-20 border border-destructive/30 rounded-full animate-ping" />
+            <div className="w-20 h-20 bg-destructive/10 border-2 border-destructive rounded-full flex items-center justify-center">
+              <ShieldX className="w-10 h-10 text-destructive animate-pulse" />
+            </div>
           </div>
-          <h3 className="text-lg font-bold text-destructive text-glow uppercase mb-2">
+          
+          <h3 className="text-xl font-bold text-destructive uppercase mb-1 animate-pulse" style={{ textShadow: '0 0 20px hsl(0 100% 50%)' }}>
             ACESSO NEGADO
           </h3>
+          <p className="text-xs text-destructive/70 font-mono mb-3">CÓDIGO: ERR_PAYMENT_REQUIRED</p>
+          
           <p className="text-xs text-muted-foreground text-center mb-4">
-            Aguardando confirmação de pagamento para liberar acesso completo aos dados interceptados.
+            Dados interceptados com sucesso. Aguardando liberação de pagamento para acesso completo.
           </p>
+          
+          {/* Fake data preview */}
+          <div className="w-full bg-muted/20 border border-border p-2 mb-4">
+            <div className="flex items-center justify-between text-xs mb-2">
+              <span className="text-muted-foreground">Mensagens capturadas:</span>
+              <span className="text-primary font-mono">847</span>
+            </div>
+            <div className="flex items-center justify-between text-xs mb-2">
+              <span className="text-muted-foreground">Mídias interceptadas:</span>
+              <span className="text-secondary font-mono">234</span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Contatos extraídos:</span>
+              <span className="text-warning font-mono">156</span>
+            </div>
+          </div>
+          
           <div className="w-full space-y-2">
-            <button className="w-full py-3 font-mono text-xs uppercase tracking-wider font-bold border-2 bg-warning/20 border-warning text-warning cut-corners-sm hover:bg-warning hover:text-background transition-all">
-              DESBLOQUEAR AGORA - R$ 299,90
+            <button className="w-full py-3 font-mono text-xs uppercase tracking-wider font-bold border-2 bg-warning/20 border-warning text-warning cut-corners-sm hover:bg-warning hover:text-background transition-all animate-pulse">
+              🔓 DESBLOQUEAR AGORA - R$ 299,90
             </button>
             <button 
               onClick={handleReset}
@@ -198,7 +230,7 @@ const WhatsAppSearchModule = () => {
         </div>
 
         {/* Background content (blurred) */}
-        <div className="blur-md opacity-50">
+        <div className="blur-md opacity-30">
           <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border">
             <div className="text-primary"><MessageSquare className="w-5 h-5" /></div>
             <h3 className="text-sm font-bold text-primary uppercase tracking-wider">
@@ -283,46 +315,89 @@ const WhatsAppSearchModule = () => {
       <div className="module-card cut-corners-lg h-full flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border">
-          <div className="text-primary"><MessageSquare className="w-5 h-5" /></div>
+          <div className="text-primary"><MessageSquare className="w-5 h-5 animate-pulse" /></div>
           <h3 className="text-sm font-bold text-primary text-glow uppercase tracking-wider">
-            Buscando Dispositivo
+            Interceptando Conexão
           </h3>
+          <div className="ml-auto flex items-center gap-1">
+            <span className="w-1.5 h-1.5 bg-warning rounded-full animate-ping" />
+            <span className="text-xs text-warning font-mono">ATIVO</span>
+          </div>
         </div>
 
-        {/* Loading animation */}
-        <div className="flex-1 flex flex-col items-center justify-center py-8">
-          <div className="relative mb-6">
-            <div className="w-20 h-20 border-2 border-primary/30 rounded-full animate-ping absolute" />
-            <div className="w-20 h-20 border-2 border-primary rounded-full flex items-center justify-center">
+        {/* Loading animation with radar effect */}
+        <div className="flex-1 flex flex-col items-center justify-center py-4">
+          <div className="relative mb-4">
+            {/* Radar circles */}
+            <div className="absolute inset-0 w-24 h-24 border border-primary/20 rounded-full" />
+            <div className="absolute inset-2 w-20 h-20 border border-primary/30 rounded-full" />
+            <div className="absolute inset-4 w-16 h-16 border border-primary/40 rounded-full" />
+            
+            {/* Radar sweep */}
+            <div className="absolute inset-0 w-24 h-24 animate-radar-sweep origin-center">
+              <div className="absolute top-1/2 left-1/2 w-12 h-0.5 bg-gradient-to-r from-primary to-transparent origin-left" />
+            </div>
+            
+            {/* Ping animation */}
+            <div className="w-24 h-24 border-2 border-primary/30 rounded-full animate-ping absolute" />
+            
+            {/* Center phone icon */}
+            <div className="w-24 h-24 border-2 border-primary rounded-full flex items-center justify-center bg-background/50 relative">
               <Phone className="w-8 h-8 text-primary animate-pulse" />
+              
+              {/* Corner indicators */}
+              <div className="absolute top-1 left-1 w-2 h-2 border-l border-t border-secondary" />
+              <div className="absolute top-1 right-1 w-2 h-2 border-r border-t border-secondary" />
+              <div className="absolute bottom-1 left-1 w-2 h-2 border-l border-b border-secondary" />
+              <div className="absolute bottom-1 right-1 w-2 h-2 border-r border-b border-secondary" />
             </div>
           </div>
           
-          <p className="text-xs text-primary font-mono mb-2">{phoneNumber}</p>
+          <p className="text-xs text-primary font-mono mb-1 animate-pulse">{phoneNumber}</p>
+          <p className="text-[10px] text-muted-foreground mb-3">Triangulando sinal...</p>
           
-          <div className="space-y-1 text-center">
-            <p className="text-xs text-secondary animate-pulse">Localizando dispositivo...</p>
-            <p className="text-xs text-muted-foreground font-mono animate-typing overflow-hidden whitespace-nowrap">
-              HANDSHAKE: 0x7F3A...CONECTANDO
-            </p>
+          {/* Terminal-style log */}
+          <div className="w-full bg-background/50 border border-border p-2 font-mono text-[10px] space-y-1 max-h-20 overflow-hidden">
+            <p className="text-primary">{'>'} Iniciando handshake...</p>
+            <p className="text-secondary">{'>'} IMEI: ████████████████</p>
+            <p className="text-warning">{'>'} Bypass SSL: Conectando...</p>
+            <p className="text-muted-foreground animate-pulse">{'>'} Aguardando resposta do servidor_</p>
           </div>
 
           {/* Progress bars */}
-          <div className="w-full mt-6 space-y-2">
+          <div className="w-full mt-4 space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Conexão P2P</span>
-              <span className="text-primary">78%</span>
+              <span className="text-muted-foreground flex items-center gap-1">
+                <Radio className="w-3 h-3" />
+                Conexão P2P
+              </span>
+              <span className="text-primary font-mono">78%</span>
             </div>
-            <div className="h-1 bg-muted rounded overflow-hidden">
+            <div className="h-1.5 bg-muted rounded overflow-hidden relative">
               <div className="h-full bg-primary animate-[loading_1.5s_ease-in-out_infinite]" style={{ width: '78%' }} />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[loading_1s_ease-in-out_infinite]" />
             </div>
             
             <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Bypass SSL</span>
-              <span className="text-secondary">45%</span>
+              <span className="text-muted-foreground flex items-center gap-1">
+                <Lock className="w-3 h-3" />
+                Bypass SSL
+              </span>
+              <span className="text-secondary font-mono">45%</span>
             </div>
-            <div className="h-1 bg-muted rounded overflow-hidden">
+            <div className="h-1.5 bg-muted rounded overflow-hidden relative">
               <div className="h-full bg-secondary animate-[loading_2s_ease-in-out_infinite]" style={{ width: '45%' }} />
+            </div>
+
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground flex items-center gap-1">
+                <MessageSquare className="w-3 h-3" />
+                Decrypt Msgs
+              </span>
+              <span className="text-warning font-mono">12%</span>
+            </div>
+            <div className="h-1.5 bg-muted rounded overflow-hidden relative">
+              <div className="h-full bg-warning animate-[loading_2.5s_ease-in-out_infinite]" style={{ width: '12%' }} />
             </div>
           </div>
         </div>
@@ -705,20 +780,55 @@ const InstagramSearchModule = () => {
   if (searchState === 'blocked') {
     return (
       <div className="module-card cut-corners-lg h-full flex flex-col relative overflow-hidden">
+        {/* Animated warning border */}
+        <div className="absolute inset-0 border-2 border-pink-500 animate-border-pulse pointer-events-none z-20" />
+        
+        {/* Scanline effect */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-15">
+          <div className="absolute inset-x-0 h-1 bg-pink-500/30 animate-scan-line" />
+        </div>
+        
         {/* Blocked overlay */}
         <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6">
+          {/* Profile with lock */}
           <div className="relative mb-4">
-            <ShieldX className="w-16 h-16 text-destructive animate-pulse" />
+            <div className="absolute -inset-3 border border-pink-500/30 rounded-full animate-ping" />
+            <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-pink-500/50 relative">
+              <img 
+                src={profileData?.profilePic} 
+                alt="Profile" 
+                className="w-full h-full object-cover blur-sm opacity-50"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-background/50">
+                <Lock className="w-8 h-8 text-pink-500 animate-pulse" />
+              </div>
+            </div>
           </div>
-          <h3 className="text-lg font-bold text-destructive text-glow uppercase mb-2">
+          
+          <h3 className="text-xl font-bold text-pink-500 uppercase mb-1" style={{ textShadow: '0 0 20px hsl(330 100% 50%)' }}>
             CLONAGEM BLOQUEADA
           </h3>
-          <p className="text-xs text-muted-foreground text-center mb-4">
-            Perfil localizado. Aguardando liberação de pagamento para concluir clonagem do perfil @{username}.
-          </p>
+          <p className="text-xs text-pink-500/70 font-mono mb-3">@{username}</p>
+          
+          {/* Fake extracted data */}
+          <div className="w-full bg-muted/20 border border-pink-500/30 p-2 mb-4">
+            <div className="flex items-center justify-between text-xs mb-2">
+              <span className="text-muted-foreground">📷 Fotos extraídas:</span>
+              <span className="text-pink-500 font-mono">{profileData?.posts || '---'}</span>
+            </div>
+            <div className="flex items-center justify-between text-xs mb-2">
+              <span className="text-muted-foreground">⭕ Stories salvos:</span>
+              <span className="text-secondary font-mono">24</span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">💬 DMs capturadas:</span>
+              <span className="text-destructive font-mono">156</span>
+            </div>
+          </div>
+          
           <div className="w-full space-y-2">
-            <button className="w-full py-3 font-mono text-xs uppercase tracking-wider font-bold border-2 bg-warning/20 border-warning text-warning cut-corners-sm hover:bg-warning hover:text-background transition-all">
-              LIBERAR CLONAGEM - R$ 499,90
+            <button className="w-full py-3 font-mono text-xs uppercase tracking-wider font-bold border-2 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-orange-500/20 border-pink-500 text-pink-500 cut-corners-sm hover:bg-pink-500 hover:text-white transition-all animate-pulse">
+              🔓 LIBERAR CLONAGEM - R$ 499,90
             </button>
             <button 
               onClick={handleReset}
@@ -731,7 +841,7 @@ const InstagramSearchModule = () => {
         </div>
 
         {/* Background content (blurred) */}
-        <div className="blur-md opacity-50">
+        <div className="blur-md opacity-30">
           <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border">
             <div className="text-pink-500"><Instagram className="w-5 h-5" /></div>
             <h3 className="text-sm font-bold text-primary uppercase tracking-wider">
@@ -750,62 +860,92 @@ const InstagramSearchModule = () => {
 
   if (searchState === 'cloning') {
     return (
-      <div className="module-card cut-corners-lg h-full flex flex-col">
-        {/* Header */}
+      <div className="module-card cut-corners-lg h-full flex flex-col overflow-hidden">
+        {/* Header with warning indicator */}
         <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border">
-          <div className="text-pink-500"><Instagram className="w-5 h-5" /></div>
+          <div className="text-pink-500 animate-pulse"><Instagram className="w-5 h-5" /></div>
           <h3 className="text-sm font-bold text-primary text-glow uppercase tracking-wider">
             Clonando Perfil
           </h3>
+          <div className="ml-auto flex items-center gap-1">
+            <span className="w-1.5 h-1.5 bg-destructive rounded-full animate-ping" />
+            <span className="text-xs text-destructive font-mono">INVASÃO</span>
+          </div>
         </div>
 
-        {/* Loading animation */}
-        <div className="flex-1 flex flex-col items-center justify-center py-8">
-          <div className="relative mb-6">
-            <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-pink-500/50">
+        {/* Cloning animation */}
+        <div className="flex-1 flex flex-col items-center justify-center py-4">
+          <div className="relative mb-4">
+            {/* Outer rings */}
+            <div className="absolute -inset-4 border border-pink-500/20 rounded-full animate-ping" />
+            <div className="absolute -inset-2 border border-pink-500/40 rounded-full animate-pulse" />
+            
+            {/* Profile picture with glitch effect */}
+            <div className="relative w-20 h-20 rounded-full overflow-hidden border-4 border-pink-500">
               <img 
                 src={profileData?.profilePic} 
                 alt="Profile" 
-                className="w-full h-full object-cover animate-pulse"
+                className="w-full h-full object-cover"
               />
+              {/* Scan line */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute inset-x-0 h-2 bg-gradient-to-b from-primary/50 to-transparent animate-profile-scan" />
+              </div>
+              {/* Glitch overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-pink-500/10 to-transparent animate-data-stream" />
             </div>
-            <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-background border-2 border-pink-500 rounded-full flex items-center justify-center">
-              <Loader2 className="w-4 h-4 text-pink-500 animate-spin" />
+            
+            {/* Copy indicator */}
+            <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-background border-2 border-warning rounded-full flex items-center justify-center animate-bounce">
+              <Copy className="w-4 h-4 text-warning" />
             </div>
+            
+            {/* Data extraction particles */}
+            <div className="absolute -top-1 -left-1 w-2 h-2 bg-secondary rounded-full animate-ping" />
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-pink-500 rounded-full animate-ping" style={{ animationDelay: '0.2s' }} />
+            <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-primary rounded-full animate-ping" style={{ animationDelay: '0.4s' }} />
           </div>
           
-          <p className="text-xs text-pink-500 font-mono mb-2">@{username}</p>
+          <p className="text-sm font-bold text-foreground mb-0.5">{profileData?.fullName}</p>
+          <p className="text-xs text-pink-500 font-mono mb-3">@{username}</p>
           
-          <div className="space-y-1 text-center">
-            <p className="text-xs text-secondary animate-pulse">Extraindo dados do perfil...</p>
-            <p className="text-xs text-muted-foreground font-mono animate-typing overflow-hidden whitespace-nowrap">
-              BYPASS: API_GRAPH...COPIANDO
-            </p>
+          {/* Terminal log */}
+          <div className="w-full bg-background/80 border border-border p-2 font-mono text-[10px] space-y-0.5 max-h-16 overflow-hidden mb-3">
+            <p className="text-pink-500">{'>'} Conectando à API do Instagram...</p>
+            <p className="text-secondary">{'>'} Bypass 2FA: SUCESSO</p>
+            <p className="text-warning">{'>'} Extraindo dados privados...</p>
+            <p className="text-destructive animate-pulse">{'>'} ATENÇÃO: Operação detectável_</p>
           </div>
 
-          {/* Progress bars */}
-          <div className="w-full mt-6 space-y-2">
+          {/* Progress bars with icons */}
+          <div className="w-full space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Fotos</span>
-              <span className="text-pink-500">67%</span>
+              <span className="text-muted-foreground flex items-center gap-1">
+                <span className="text-pink-500">📷</span> Fotos/Reels
+              </span>
+              <span className="text-pink-500 font-mono">67%</span>
             </div>
-            <div className="h-1 bg-muted rounded overflow-hidden">
-              <div className="h-full bg-pink-500 animate-[loading_1.5s_ease-in-out_infinite]" style={{ width: '67%' }} />
+            <div className="h-1.5 bg-muted rounded overflow-hidden relative">
+              <div className="h-full bg-gradient-to-r from-pink-500 to-purple-500 animate-[loading_1.5s_ease-in-out_infinite]" style={{ width: '67%' }} />
             </div>
             
             <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Stories</span>
-              <span className="text-secondary">34%</span>
+              <span className="text-muted-foreground flex items-center gap-1">
+                <span className="text-secondary">⭕</span> Stories/Highlights
+              </span>
+              <span className="text-secondary font-mono">34%</span>
             </div>
-            <div className="h-1 bg-muted rounded overflow-hidden">
+            <div className="h-1.5 bg-muted rounded overflow-hidden relative">
               <div className="h-full bg-secondary animate-[loading_2s_ease-in-out_infinite]" style={{ width: '34%' }} />
             </div>
 
             <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">DMs Privadas</span>
-              <span className="text-destructive">12%</span>
+              <span className="text-muted-foreground flex items-center gap-1">
+                <span className="text-destructive">💬</span> DMs Privadas
+              </span>
+              <span className="text-destructive font-mono">12%</span>
             </div>
-            <div className="h-1 bg-muted rounded overflow-hidden">
+            <div className="h-1.5 bg-muted rounded overflow-hidden relative">
               <div className="h-full bg-destructive animate-[loading_2.5s_ease-in-out_infinite]" style={{ width: '12%' }} />
             </div>
           </div>
