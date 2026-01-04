@@ -1,12 +1,16 @@
 import MatrixRain from '@/components/MatrixRain';
 import Header from '@/components/Header';
 import SurveillancePanel from '@/components/SurveillancePanel';
+import GlobeBackground from '@/components/GlobeBackground';
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background scanlines animate-flicker">
       {/* Matrix rain background */}
       <MatrixRain />
+      
+      {/* Wireframe globe */}
+      <GlobeBackground />
       
       {/* Main content */}
       <div className="relative z-10">
