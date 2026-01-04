@@ -245,6 +245,12 @@
     animation: coordinates 0.5s ease-in-out infinite;
   }
 
+  @keyframes loading {
+    0% { transform: translateX(-100%); }
+    50% { transform: translateX(0%); }
+    100% { transform: translateX(100%); }
+  }
+
   /* Module card styles */
   .module-card {
     @apply relative bg-card border border-border p-4;
