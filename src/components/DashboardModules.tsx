@@ -163,10 +163,10 @@ const WhatsAppSearchModule = () => {
   ];
 
   const fakeContacts = [
-    { name: 'Maria Silva', lastMsg: 'Ok, te vejo lá!', time: '14:32', photo: '👩' },
-    { name: 'João Pedro', lastMsg: 'Mandei o arquivo...', time: '13:15', photo: '👨' },
-    { name: 'Ana Costa', lastMsg: 'Obrigada!', time: '11:48', photo: '👩‍💼' },
-    { name: 'Carlos M.', lastMsg: 'Vamos confirmar...', time: '09:22', photo: '👨‍💻' },
+    { name: 'Maria Silva', lastMsg: 'Ok, te vejo lá!', time: '14:32', photo: '👩', status: 'online', unread: 3 },
+    { name: 'João Pedro', lastMsg: 'Mandei o arquivo...', time: '13:15', photo: '👨', status: 'offline', unread: 0 },
+    { name: 'Ana Costa', lastMsg: 'Obrigada!', time: '11:48', photo: '👩‍💼', status: 'online', unread: 1 },
+    { name: 'Carlos M.', lastMsg: 'Vamos confirmar...', time: '09:22', photo: '👨‍💻', status: 'away', unread: 0 },
   ];
 
   if (searchState === 'blocked') {
@@ -358,22 +358,62 @@ const WhatsAppSearchModule = () => {
         </div>
       </div>
 
-      {/* Contact list preview */}
+      {/* Contact list preview - Renovated */}
       <div className="flex-1">
-        <p className="text-xs text-muted-foreground uppercase mb-2">Alvos Recentes (Borrado)</p>
-        <div className="space-y-2">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-xs text-muted-foreground uppercase">Alvos Monitorados</p>
+          <div className="flex items-center gap-1 text-xs text-warning">
+            <span className="w-1.5 h-1.5 bg-warning rounded-full animate-pulse" />
+            <span>4 ativos</span>
+          </div>
+        </div>
+        <div className="space-y-1.5">
           {fakeContacts.map((contact, i) => (
-            <div key={i} className="flex items-center gap-3 p-2 bg-muted/30 border border-border/50">
-              <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-sm blur-[2px]">
-                {contact.photo}
+            <div 
+              key={i} 
+              className="relative flex items-center gap-3 p-2 bg-muted/20 border border-border/50 hover:border-primary/30 transition-all group overflow-hidden"
+            >
+              {/* Scanner overlay effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+              
+              {/* Avatar with status */}
+              <div className="relative">
+                <div className="w-9 h-9 bg-muted/50 rounded-full flex items-center justify-center text-base blur-[2px] border border-border/50">
+                  {contact.photo}
+                </div>
+                {/* Status indicator */}
+                <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-background ${
+                  contact.status === 'online' ? 'bg-primary' : 
+                  contact.status === 'away' ? 'bg-warning' : 'bg-muted-foreground'
+                }`} />
               </div>
-              <div className="flex-1">
-                <p className="text-xs text-foreground font-bold blur-[3px]">{contact.name}</p>
-                <p className="text-xs text-muted-foreground blur-[4px]">{contact.lastMsg}</p>
+              
+              {/* Contact info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="text-xs text-foreground font-bold blur-[3px] truncate">{contact.name}</p>
+                  {contact.unread > 0 && (
+                    <span className="px-1.5 py-0.5 bg-primary/20 text-primary text-[10px] font-bold rounded blur-[1px]">
+                      {contact.unread}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground blur-[4px] truncate">{contact.lastMsg}</p>
               </div>
-              <span className="text-xs text-secondary">{contact.time}</span>
+              
+              {/* Time and lock icon */}
+              <div className="flex flex-col items-end gap-1">
+                <span className="text-[10px] text-secondary font-mono">{contact.time}</span>
+                <Lock className="w-2.5 h-2.5 text-destructive/50" />
+              </div>
             </div>
           ))}
+        </div>
+        
+        {/* Intercepted data hint */}
+        <div className="mt-2 p-2 bg-destructive/5 border border-destructive/20 flex items-center gap-2">
+          <AlertTriangle className="w-3 h-3 text-destructive animate-pulse" />
+          <span className="text-[10px] text-destructive/80">Dados criptografados detectados • Requer desbloqueio</span>
         </div>
       </div>
 
