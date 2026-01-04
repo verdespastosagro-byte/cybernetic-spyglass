@@ -216,14 +216,13 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
           </div>
 
 
-          {/* Kiwify Button */}
+          {/* Buy Button */}
           <div className="mb-4">
             <button
               onClick={handleOpenKiwify}
-              className="w-full py-4 font-mono text-sm uppercase tracking-wider font-bold border-2 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 border-secondary text-secondary hover:bg-secondary hover:text-background cut-corners-sm flex items-center justify-center gap-2 transition-all"
+              className="w-full py-5 text-xl uppercase tracking-widest font-black bg-secondary text-background hover:bg-secondary/90 hover:scale-[1.02] cut-corners-sm flex items-center justify-center gap-3 transition-all shadow-lg shadow-secondary/30 animate-pulse hover:animate-none"
             >
-              <ExternalLink className="w-5 h-5" />
-              Pagar com Kiwify
+              🔓 COMPRAR AGORA
             </button>
           </div>
 
