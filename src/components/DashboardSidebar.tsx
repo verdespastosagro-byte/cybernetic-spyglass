@@ -1,11 +1,52 @@
-import { Shield, Wifi, Lock, User, Award } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Shield, Wifi, Lock, User, Award, MapPin } from 'lucide-react';
 import MiniGlobeWidget from './MiniGlobeWidget';
 
 interface DashboardSidebarProps {
   username: string;
 }
 
+interface UserLocation {
+  ip: string;
+  city: string;
+  region: string;
+  country: string;
+  isp: string;
+}
+
 const DashboardSidebar = ({ username }: DashboardSidebarProps) => {
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLocation = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        setUserLocation({
+          ip: data.ip,
+          city: data.city,
+          region: data.region,
+          country: data.country_name,
+          isp: data.org || 'Desconhecido'
+        });
+      } catch (error) {
+        // Fallback with fake data if API fails
+        setUserLocation({
+          ip: '189.xxx.xxx.xxx',
+          city: 'São Paulo',
+          region: 'SP',
+          country: 'Brasil',
+          isp: 'Operadora Local'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLocation();
+  }, []);
+
   return (
     <aside className="w-full lg:w-72 space-y-4">
       {/* Connection Status */}
@@ -27,6 +68,40 @@ const DashboardSidebar = ({ username }: DashboardSidebarProps) => {
         <div className="mt-2 flex items-center gap-2 text-xs text-secondary">
           <Lock className="w-3 h-3" />
           <span>VPN ATIVA</span>
+        </div>
+
+        {/* User IP and Location */}
+        <div className="mt-3 pt-3 border-t border-border">
+          <div className="flex items-center gap-2 mb-2">
+            <MapPin className="w-3 h-3 text-destructive" />
+            <span className="text-xs text-destructive uppercase">Seu Acesso</span>
+          </div>
+          
+          {loading ? (
+            <div className="space-y-1">
+              <div className="h-3 bg-muted/50 animate-pulse rounded w-3/4" />
+              <div className="h-3 bg-muted/50 animate-pulse rounded w-1/2" />
+            </div>
+          ) : (
+            <div className="text-xs text-muted-foreground space-y-1">
+              <div className="flex justify-between">
+                <span>IP:</span>
+                <span className="text-warning font-mono">{userLocation?.ip}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Local:</span>
+                <span className="text-warning">{userLocation?.city}, {userLocation?.region}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>País:</span>
+                <span className="text-warning">{userLocation?.country}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>ISP:</span>
+                <span className="text-warning text-right truncate max-w-[120px]">{userLocation?.isp}</span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="mt-3 text-xs text-muted-foreground space-y-1">
