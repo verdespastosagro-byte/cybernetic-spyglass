@@ -5,6 +5,7 @@ import DashboardModules from './DashboardModules';
 import MatrixRain from './MatrixRain';
 import WaitingDashboard from './WaitingDashboard';
 import TargetSearchScreen from './TargetSearchScreen';
+import PaywallScreen from './PaywallScreen';
 import { FakePersonData } from '@/lib/fakeDataGenerator';
 
 interface DashboardScreenProps {
@@ -12,7 +13,7 @@ interface DashboardScreenProps {
   onLogout: () => void;
 }
 
-type DashboardState = 'waiting' | 'searching' | 'monitoring';
+type DashboardState = 'waiting' | 'searching' | 'paywall' | 'monitoring';
 
 const DashboardScreen = ({ username, onLogout }: DashboardScreenProps) => {
   const [dashboardState, setDashboardState] = useState<DashboardState>('waiting');
@@ -26,6 +27,10 @@ const DashboardScreen = ({ username, onLogout }: DashboardScreenProps) => {
   const handleTargetFound = (phoneNumber: string, personData: FakePersonData) => {
     setTargetPhone(phoneNumber);
     setTargetPersonData(personData);
+    setDashboardState('paywall'); // Go to paywall instead of monitoring
+  };
+
+  const handlePaymentConfirmed = () => {
     setDashboardState('monitoring');
   };
 
@@ -60,7 +65,19 @@ const DashboardScreen = ({ username, onLogout }: DashboardScreenProps) => {
     );
   }
 
-  // Show full monitoring dashboard (target found)
+  // Show paywall screen (target found, awaiting payment)
+  if (dashboardState === 'paywall') {
+    return (
+      <PaywallScreen
+        onPaymentConfirmed={handlePaymentConfirmed}
+        onCancel={handleNewOperation}
+        targetPhone={targetPhone}
+        targetName={targetPersonData?.blurredName}
+      />
+    );
+  }
+
+  // Show full monitoring dashboard (payment confirmed)
   return (
     <div className="min-h-screen bg-background scanlines">
       {/* Matrix rain background */}
