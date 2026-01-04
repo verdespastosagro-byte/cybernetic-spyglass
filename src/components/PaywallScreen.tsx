@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Lock, QrCode, Copy, Check, AlertTriangle, Shield, Clock, CreditCard } from 'lucide-react';
+import { Lock, QrCode, Copy, Check, AlertTriangle, Shield, Clock, CreditCard, ExternalLink } from 'lucide-react';
 import { playSuccessBeep, playWarningBeep } from '@/lib/sounds';
+import { supabase } from '@/integrations/supabase/client';
 import MatrixRain from './MatrixRain';
 
 interface PaywallScreenProps {
@@ -14,9 +15,12 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
   const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState(900); // 15 minutes in seconds
   const [isChecking, setIsChecking] = useState(false);
+  const [checkAttempts, setCheckAttempts] = useState(0);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [kiwifyUrl, setKiwifyUrl] = useState('');
 
-  // Fake PIX key
-  const pixKey = "00020126580014br.gov.bcb.pix0136a1b2c3d4-e5f6-7890-abcd-ef1234567890520400005303986540599.905802BR5925SISTEMA SENTINELA LTDA6009SAO PAULO62070503***6304A1B2";
+  // You can set your Kiwify checkout URL here
+  const defaultKiwifyUrl = 'https://pay.kiwify.com.br/SEU_PRODUTO';
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -29,8 +33,16 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, []);
+    // Auto-check payment every 10 seconds
+    const paymentChecker = setInterval(async () => {
+      await checkPaymentSilently();
+    }, 10000);
+
+    return () => {
+      clearInterval(timer);
+      clearInterval(paymentChecker);
+    };
+  }, [targetPhone]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -39,23 +51,72 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
   };
 
   const handleCopyPix = () => {
-    navigator.clipboard.writeText(pixKey);
+    const pixCode = "00020126580014br.gov.bcb.pix0136a1b2c3d4-e5f6-7890-abcd-ef1234567890520400005303986540599.905802BR5925SISTEMA SENTINELA LTDA6009SAO PAULO62070503***6304A1B2";
+    navigator.clipboard.writeText(pixCode);
     setCopied(true);
     playSuccessBeep();
     setTimeout(() => setCopied(false), 3000);
   };
 
-  const handleCheckPayment = () => {
+  const checkPaymentSilently = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('payments')
+        .select('*')
+        .eq('phone_number', targetPhone)
+        .eq('status', 'approved')
+        .limit(1);
+
+      if (data && data.length > 0) {
+        playSuccessBeep();
+        onPaymentConfirmed();
+      }
+    } catch (err) {
+      console.error('Silent payment check error:', err);
+    }
+  };
+
+  const handleCheckPayment = async () => {
     setIsChecking(true);
+    setErrorMessage('');
     playWarningBeep();
     
-    // Simulate checking - after 3 seconds confirm payment
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase
+        .from('payments')
+        .select('*')
+        .eq('phone_number', targetPhone)
+        .eq('status', 'approved')
+        .limit(1);
+
+      if (error) {
+        console.error('Payment check error:', error);
+        setErrorMessage('Erro ao verificar pagamento. Tente novamente.');
+        setIsChecking(false);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        playSuccessBeep();
+        onPaymentConfirmed();
+      } else {
+        setCheckAttempts(prev => prev + 1);
+        setErrorMessage('Pagamento não encontrado. Realize o pagamento e aguarde alguns segundos.');
+        setIsChecking(false);
+      }
+    } catch (err) {
+      console.error('Payment check error:', err);
+      setErrorMessage('Erro de conexão. Tente novamente.');
       setIsChecking(false);
-      playSuccessBeep();
-      onPaymentConfirmed();
-    }, 3000);
+    }
   };
+
+  const handleOpenKiwify = () => {
+    const url = kiwifyUrl || defaultKiwifyUrl;
+    window.open(url, '_blank');
+  };
+
+  const pixKey = "00020126580014br.gov.bcb.pix0136a1b2c3d4-e5f6-7890-abcd-ef1234567890520400005303986540599.905802BR5925SISTEMA SENTINELA LTDA6009SAO PAULO62070503***6304A1B2";
 
   return (
     <div className="min-h-screen bg-background scanlines flex items-center justify-center p-4">
@@ -180,6 +241,17 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
             </div>
           </div>
 
+          {/* Kiwify Button */}
+          <div className="mb-4">
+            <button
+              onClick={handleOpenKiwify}
+              className="w-full py-4 font-mono text-sm uppercase tracking-wider font-bold border-2 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 border-secondary text-secondary hover:bg-secondary hover:text-background cut-corners-sm flex items-center justify-center gap-2 transition-all"
+            >
+              <ExternalLink className="w-5 h-5" />
+              Pagar com Kiwify
+            </button>
+          </div>
+
           {/* PIX Key */}
           <div className="mb-4">
             <p className="text-xs text-muted-foreground uppercase mb-2 text-center">Ou copie o código PIX:</p>
@@ -209,6 +281,13 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
             </span>
           </div>
 
+          {/* Error Message */}
+          {errorMessage && (
+            <div className="mb-4 p-2 bg-destructive/10 border border-destructive text-xs text-destructive text-center animate-pulse">
+              {errorMessage}
+            </div>
+          )}
+
           {/* Actions */}
           <div className="space-y-3">
             <button
@@ -228,7 +307,7 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
               ) : (
                 <>
                   <CreditCard className="w-5 h-5" />
-                  Já Paguei - Liberar Acesso
+                  Já Paguei - Liberar Acesso {checkAttempts > 0 && `(${checkAttempts})`}
                 </>
               )}
             </button>
