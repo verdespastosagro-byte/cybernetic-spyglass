@@ -19,8 +19,8 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
   const [errorMessage, setErrorMessage] = useState('');
   const [kiwifyUrl, setKiwifyUrl] = useState('');
 
-  // You can set your Kiwify checkout URL here
-  const defaultKiwifyUrl = 'https://pay.kiwify.com.br/SEU_PRODUTO';
+  // Kiwify checkout URL
+  const defaultKiwifyUrl = 'https://pay.kiwify.com.br/8zPiNDF';
 
   useEffect(() => {
     const timer = setInterval(() => {
