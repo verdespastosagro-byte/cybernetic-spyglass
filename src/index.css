@@ -390,6 +390,26 @@
     animation: border-pulse 2s ease-in-out infinite;
   }
 
+  /* Typing cursor animation */
+  @keyframes typing-cursor {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  .animate-typing-cursor {
+    animation: typing-cursor 1s steps(1) infinite;
+  }
+
+  /* Scan line animation */
+  @keyframes scan-line {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+
+  .animate-scan-line {
+    animation: scan-line 3s linear infinite;
+  }
+
   /* Module card styles */
   .module-card {
     @apply relative bg-card border border-border p-4;
