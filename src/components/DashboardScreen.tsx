@@ -5,6 +5,7 @@ import DashboardModules from './DashboardModules';
 import MatrixRain from './MatrixRain';
 import WaitingDashboard from './WaitingDashboard';
 import TargetSearchScreen from './TargetSearchScreen';
+import { FakePersonData } from '@/lib/fakeDataGenerator';
 
 interface DashboardScreenProps {
   username: string;
@@ -16,13 +17,15 @@ type DashboardState = 'waiting' | 'searching' | 'monitoring';
 const DashboardScreen = ({ username, onLogout }: DashboardScreenProps) => {
   const [dashboardState, setDashboardState] = useState<DashboardState>('waiting');
   const [targetPhone, setTargetPhone] = useState<string>('');
+  const [targetPersonData, setTargetPersonData] = useState<FakePersonData | null>(null);
 
   const handleStartSearch = () => {
     setDashboardState('searching');
   };
 
-  const handleTargetFound = (phoneNumber: string) => {
+  const handleTargetFound = (phoneNumber: string, personData: FakePersonData) => {
     setTargetPhone(phoneNumber);
+    setTargetPersonData(personData);
     setDashboardState('monitoring');
   };
 
@@ -32,6 +35,7 @@ const DashboardScreen = ({ username, onLogout }: DashboardScreenProps) => {
 
   const handleNewOperation = () => {
     setTargetPhone('');
+    setTargetPersonData(null);
     setDashboardState('waiting');
   };
 
@@ -77,8 +81,20 @@ const DashboardScreen = ({ username, onLogout }: DashboardScreenProps) => {
                 <div className="flex items-center gap-3 mt-2">
                   <span className="inline-block w-2 h-2 bg-destructive rounded-full animate-pulse" />
                   <span className="text-sm text-destructive font-mono">{targetPhone}</span>
-                  <span className="text-xs text-muted-foreground">• Dispositivo comprometido</span>
+                  {targetPersonData && (
+                    <>
+                      <span className="text-xs text-muted-foreground">•</span>
+                      <span className="text-sm text-primary font-mono">{targetPersonData.blurredName}</span>
+                    </>
+                  )}
                 </div>
+                {targetPersonData && (
+                  <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
+                    <span>CPF: {targetPersonData.cpf}</span>
+                    <span>Nasc: {targetPersonData.blurredBirthDate}</span>
+                    <span>{targetPersonData.blurredCity} - {targetPersonData.state}</span>
+                  </div>
+                )}
               </div>
               
               <button

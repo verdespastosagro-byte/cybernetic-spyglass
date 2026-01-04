@@ -10,22 +10,30 @@ import {
   Server,
   Fingerprint,
   Eye,
-  AlertTriangle
+  AlertTriangle,
+  User,
+  Calendar,
+  MapPin,
+  CreditCard,
+  Database
 } from 'lucide-react';
 import { playKeystroke, playWarningBeep, playSuccessBeep, playErrorAlarm } from '@/lib/sounds';
 import MatrixRain from './MatrixRain';
+import { generateFakePersonData, FakePersonData } from '@/lib/fakeDataGenerator';
 
 interface TargetSearchScreenProps {
-  onTargetFound: (phoneNumber: string) => void;
+  onTargetFound: (phoneNumber: string, personData: FakePersonData) => void;
   onCancel: () => void;
 }
 
 const TargetSearchScreen = ({ onTargetFound, onCancel }: TargetSearchScreenProps) => {
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [stage, setStage] = useState<'input' | 'processing' | 'connecting'>('input');
+  const [stage, setStage] = useState<'input' | 'processing' | 'dataLookup' | 'connecting'>('input');
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const [terminalLines, setTerminalLines] = useState<string[]>([]);
+  const [personData, setPersonData] = useState<FakePersonData | null>(null);
+  const [dataLookupProgress, setDataLookupProgress] = useState(0);
 
   const processingSteps = [
     { text: 'Iniciando protocolo SENTINEL...', delay: 300 },
@@ -92,18 +100,151 @@ const TargetSearchScreen = ({ onTargetFound, onCancel }: TargetSearchScreenProps
         if (i === 15) playWarningBeep();
       }
 
-      // Final success
+      // Generate fake person data
+      const fakeData = generateFakePersonData(phoneNumber);
+      setPersonData(fakeData);
+
+      // Move to data lookup stage
       await new Promise(resolve => setTimeout(resolve, 500));
+      playSuccessBeep();
+      setStage('dataLookup');
+    };
+
+    runProcessing();
+  }, [stage, phoneNumber]);
+
+  // Data lookup animation
+  useEffect(() => {
+    if (stage !== 'dataLookup') return;
+
+    const runDataLookup = async () => {
+      // Animate progress
+      for (let i = 0; i <= 100; i += 5) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        setDataLookupProgress(i);
+        if (i === 50) playSuccessBeep();
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 800));
       playSuccessBeep();
       setStage('connecting');
       
       // Transition to dashboard
       await new Promise(resolve => setTimeout(resolve, 1500));
-      onTargetFound(phoneNumber);
+      if (personData) {
+        onTargetFound(phoneNumber, personData);
+      }
     };
 
-    runProcessing();
-  }, [stage]);
+    runDataLookup();
+  }, [stage, phoneNumber, personData, onTargetFound]);
+
+  // Data lookup screen
+  if (stage === 'dataLookup' && personData) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+        <MatrixRain />
+        
+        <div className="relative z-10 w-full max-w-lg">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/20 border border-secondary text-secondary text-xs uppercase tracking-wider mb-4">
+              <Database className="w-4 h-4 animate-pulse" />
+              <span>Consultando Bases de Dados</span>
+            </div>
+            
+            <h2 className="text-xl font-bold text-primary text-glow uppercase tracking-widest">
+              Dados do Titular
+            </h2>
+            <p className="text-secondary font-mono text-lg mt-2">{phoneNumber}</p>
+          </div>
+
+          {/* Data card */}
+          <div className="bg-background/80 border-2 border-primary/50 p-6 space-y-4">
+            {/* Name */}
+            <div className="flex items-center gap-3 p-3 bg-muted/20 border border-border">
+              <User className="w-5 h-5 text-primary" />
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground uppercase">Nome Completo</p>
+                <p className="text-sm font-mono text-foreground">
+                  {dataLookupProgress >= 30 ? personData.blurredName : '████████████████'}
+                </p>
+              </div>
+              {dataLookupProgress >= 30 && (
+                <span className="text-xs text-primary font-mono">ENCONTRADO</span>
+              )}
+            </div>
+
+            {/* CPF */}
+            <div className="flex items-center gap-3 p-3 bg-muted/20 border border-border">
+              <CreditCard className="w-5 h-5 text-secondary" />
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground uppercase">CPF</p>
+                <p className="text-sm font-mono text-foreground">
+                  {dataLookupProgress >= 50 ? personData.cpf : '███.███.███-██'}
+                </p>
+              </div>
+              {dataLookupProgress >= 50 && (
+                <span className="text-xs text-secondary font-mono">PARCIAL</span>
+              )}
+            </div>
+
+            {/* Birth Date */}
+            <div className="flex items-center gap-3 p-3 bg-muted/20 border border-border">
+              <Calendar className="w-5 h-5 text-warning" />
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground uppercase">Data de Nascimento</p>
+                <p className="text-sm font-mono text-foreground">
+                  {dataLookupProgress >= 70 ? personData.blurredBirthDate : '██/██/████'}
+                </p>
+              </div>
+              {dataLookupProgress >= 70 && (
+                <span className="text-xs text-warning font-mono">~{personData.age} ANOS</span>
+              )}
+            </div>
+
+            {/* Location */}
+            <div className="flex items-center gap-3 p-3 bg-muted/20 border border-border">
+              <MapPin className="w-5 h-5 text-destructive" />
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground uppercase">Localização</p>
+                <p className="text-sm font-mono text-foreground">
+                  {dataLookupProgress >= 90 ? `${personData.blurredCity} - ${personData.state}` : '████████████ - ██'}
+                </p>
+              </div>
+              {dataLookupProgress >= 90 && (
+                <span className="text-xs text-destructive font-mono">{personData.operator}</span>
+              )}
+            </div>
+
+            {/* Progress */}
+            <div className="mt-4 pt-4 border-t border-border">
+              <div className="flex justify-between text-xs text-muted-foreground mb-2">
+                <span className="flex items-center gap-1">
+                  <Database className="w-3 h-3" />
+                  Consultando bases: SERASA, RECEITA, SPC, ANATEL
+                </span>
+                <span className="text-primary font-mono">{dataLookupProgress}%</span>
+              </div>
+              <div className="h-2 bg-muted rounded overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-primary via-secondary to-primary transition-all duration-300"
+                  style={{ width: `${dataLookupProgress}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Warning */}
+          <div className="mt-4 text-center">
+            <p className="text-xs text-muted-foreground">
+              ⚠️ Dados parcialmente ocultados por segurança
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (stage === 'connecting') {
     return (
@@ -120,7 +261,12 @@ const TargetSearchScreen = ({ onTargetFound, onCancel }: TargetSearchScreenProps
           <h2 className="text-2xl font-bold text-primary text-glow uppercase tracking-widest mb-2">
             Dispositivo Comprometido
           </h2>
-          <p className="text-secondary font-mono text-lg mb-4">{phoneNumber}</p>
+          <p className="text-secondary font-mono text-lg mb-2">{phoneNumber}</p>
+          {personData && (
+            <p className="text-primary font-mono text-sm mb-4">
+              {personData.blurredName}
+            </p>
+          )}
           <p className="text-muted-foreground text-sm animate-pulse">
             Carregando painel de monitoramento...
           </p>
