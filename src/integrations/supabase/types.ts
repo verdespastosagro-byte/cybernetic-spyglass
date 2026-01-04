@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      payments: {
+        Row: {
+          amount: number | null
+          created_at: string
+          customer_name: string | null
+          email: string | null
+          id: string
+          kiwify_order_id: string | null
+          phone_number: string
+          product_name: string | null
+          status: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          customer_name?: string | null
+          email?: string | null
+          id?: string
+          kiwify_order_id?: string | null
+          phone_number: string
+          product_name?: string | null
+          status?: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          customer_name?: string | null
+          email?: string | null
+          id?: string
+          kiwify_order_id?: string | null
+          phone_number?: string
+          product_name?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
