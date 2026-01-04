@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Lock, QrCode, Copy, Check, AlertTriangle, Shield, Clock, CreditCard, ExternalLink } from 'lucide-react';
+import { Lock, Copy, Check, AlertTriangle, Shield, Clock, CreditCard, ExternalLink } from 'lucide-react';
 import { playSuccessBeep, playWarningBeep } from '@/lib/sounds';
 import { supabase } from '@/integrations/supabase/client';
 import MatrixRain from './MatrixRain';
@@ -179,7 +179,7 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
                 <span className="text-secondary">💬</span>
                 <div>
                   <span className="text-foreground text-sm font-medium">Histórico de Conversas</span>
-                  <p className="text-xs text-muted-foreground">Simulação de recuperação de mensagens</p>
+                  <p className="text-xs text-muted-foreground">Recuperação de mensagens</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-2 bg-pink-500/5 border border-pink-500/30">
@@ -215,55 +215,6 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
             <p className="text-xs text-muted-foreground mt-1">Pagamento único • Sem assinatura</p>
           </div>
 
-          {/* QR Code */}
-          <div className="bg-white rounded-lg p-4 mb-4 flex items-center justify-center">
-            <div className="relative">
-              {/* Fake QR Code pattern */}
-              <div className="w-48 h-48 relative">
-                <svg viewBox="0 0 100 100" className="w-full h-full">
-                  {/* Generate fake QR pattern */}
-                  {Array.from({ length: 20 }).map((_, row) =>
-                    Array.from({ length: 20 }).map((_, col) => (
-                      <rect
-                        key={`${row}-${col}`}
-                        x={col * 5}
-                        y={row * 5}
-                        width={5}
-                        height={5}
-                        fill={
-                          // Corner patterns
-                          (row < 7 && col < 7) ||
-                          (row < 7 && col > 12) ||
-                          (row > 12 && col < 7) ||
-                          // Random fill for other cells
-                          Math.random() > 0.5
-                            ? '#000'
-                            : '#fff'
-                        }
-                      />
-                    ))
-                  )}
-                  {/* Corner squares */}
-                  <rect x="0" y="0" width="35" height="35" fill="none" stroke="#000" strokeWidth="3" />
-                  <rect x="5" y="5" width="25" height="25" fill="none" stroke="#000" strokeWidth="3" />
-                  <rect x="10" y="10" width="15" height="15" fill="#000" />
-                  
-                  <rect x="65" y="0" width="35" height="35" fill="none" stroke="#000" strokeWidth="3" />
-                  <rect x="70" y="5" width="25" height="25" fill="none" stroke="#000" strokeWidth="3" />
-                  <rect x="75" y="10" width="15" height="15" fill="#000" />
-                  
-                  <rect x="0" y="65" width="35" height="35" fill="none" stroke="#000" strokeWidth="3" />
-                  <rect x="5" y="70" width="25" height="25" fill="none" stroke="#000" strokeWidth="3" />
-                  <rect x="10" y="75" width="15" height="15" fill="#000" />
-                </svg>
-                
-                {/* Center logo */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white border-2 border-black rounded-lg flex items-center justify-center">
-                  <span className="text-2xl">🔓</span>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Kiwify Button */}
           <div className="mb-4">
