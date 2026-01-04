@@ -785,24 +785,64 @@ const InstagramSearchModule = () => {
           </h3>
         </div>
 
-        {/* Profile info */}
+        {/* Profile info with scanner effect */}
         <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-orange-500/10 border border-pink-500/30 mb-4">
-          <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-pink-500 p-0.5">
-            <img 
-              src={profileData.profilePic} 
-              alt={profileData.username}
-              className="w-full h-full object-cover rounded-full"
-            />
+          <div className="relative w-16 h-16">
+            {/* Scanner ring animation */}
+            <div className="absolute inset-0 rounded-full border-2 border-pink-500 animate-ping opacity-30" />
+            <div className="absolute inset-0 rounded-full border-2 border-secondary animate-pulse" style={{ animationDelay: '0.5s' }} />
+            
+            {/* Profile picture container */}
+            <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-pink-500">
+              <img 
+                src={profileData.profilePic} 
+                alt={profileData.username}
+                className="w-full h-full object-cover"
+              />
+              
+              {/* Scanner line effect */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent animate-profile-scan" />
+              </div>
+              
+              {/* Corner brackets */}
+              <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-primary" />
+              <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-primary" />
+              <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-primary" />
+              <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-primary" />
+            </div>
+            
+            {/* Data extraction indicator */}
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center animate-pulse">
+              <Search className="w-2.5 h-2.5 text-background" />
+            </div>
           </div>
+          
           <div className="flex-1">
-            <p className="text-sm font-bold text-foreground">{profileData.fullName}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-bold text-foreground">{profileData.fullName}</p>
+              {profileData.isVerified && (
+                <span className="text-secondary text-xs">✓</span>
+              )}
+            </div>
             <p className="text-xs text-pink-500 font-mono">@{profileData.username}</p>
             <div className="flex gap-3 mt-1 text-xs text-muted-foreground">
               <span><strong className="text-foreground">{profileData.posts}</strong> posts</span>
               <span><strong className="text-foreground">{profileData.followers}</strong> seg.</span>
+              <span><strong className="text-foreground">{profileData.following}</strong> seguindo</span>
             </div>
           </div>
-          <div className="status-dot status-dot-active" />
+          
+          <div className="flex flex-col items-center gap-1">
+            <div className="status-dot status-dot-active" />
+            <span className="text-xs text-primary font-mono">ATIVO</span>
+          </div>
+        </div>
+
+        {/* Scanning status */}
+        <div className="flex items-center gap-2 p-2 bg-primary/5 border border-primary/30 mb-3">
+          <Loader2 className="w-3 h-3 text-primary animate-spin" />
+          <span className="text-xs text-primary font-mono animate-pulse">EXTRAINDO DADOS DO PERFIL...</span>
         </div>
 
         {/* Posts preview (blurred) */}
