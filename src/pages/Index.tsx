@@ -1,26 +1,26 @@
-import MatrixRain from '@/components/MatrixRain';
-import Header from '@/components/Header';
-import SurveillancePanel from '@/components/SurveillancePanel';
-import GlobeBackground from '@/components/GlobeBackground';
+import { useState } from 'react';
+import LoginScreen from '@/components/LoginScreen';
+import DashboardScreen from '@/components/DashboardScreen';
 
 const Index = () => {
-  return (
-    <div className="min-h-screen bg-background scanlines animate-flicker">
-      {/* Matrix rain background */}
-      <MatrixRain />
-      
-      {/* Wireframe globe */}
-      <GlobeBackground />
-      
-      {/* Main content */}
-      <div className="relative z-10">
-        <Header />
-        <main className="pb-12">
-          <SurveillancePanel />
-        </main>
-      </div>
-    </div>
-  );
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+
+  const handleLogin = (name: string) => {
+    setUsername(name);
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUsername('');
+  };
+
+  if (!isLoggedIn) {
+    return <LoginScreen onLogin={handleLogin} />;
+  }
+
+  return <DashboardScreen username={username} onLogout={handleLogout} />;
 };
 
 export default Index;
