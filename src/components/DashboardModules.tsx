@@ -519,81 +519,117 @@ const InstagramSearchModule = () => {
     followers: string;
     following: string;
     posts: string;
+    isVerified?: boolean;
   } | null>(null);
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  // Simulated Instagram profiles database
-  const instagramProfiles: Record<string, {
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+  };
+
+  const fetchInstagramProfile = async (user: string): Promise<{
+    username: string;
     fullName: string;
     profilePic: string;
     followers: string;
     following: string;
     posts: string;
-  }> = {
-    'neymarjr': {
-      fullName: 'Neymar Jr',
-      profilePic: 'https://i.pravatar.cc/150?img=33',
-      followers: '223M',
-      following: '865',
-      posts: '1.892'
-    },
-    'neymar': {
-      fullName: 'Neymar Jr 🇧🇷',
-      profilePic: 'https://i.pravatar.cc/150?img=33',
-      followers: '223M',
-      following: '865',
-      posts: '1.892'
-    },
-    'cristiano': {
-      fullName: 'Cristiano Ronaldo',
-      profilePic: 'https://i.pravatar.cc/150?img=12',
-      followers: '634M',
-      following: '582',
-      posts: '3.692'
-    },
-    'leomessi': {
-      fullName: 'Leo Messi',
-      profilePic: 'https://i.pravatar.cc/150?img=68',
-      followers: '497M',
-      following: '318',
-      posts: '1.127'
-    },
-    'kimkardashian': {
-      fullName: 'Kim Kardashian',
-      profilePic: 'https://i.pravatar.cc/150?img=47',
-      followers: '364M',
-      following: '243',
-      posts: '6.982'
+    isVerified: boolean;
+  } | null> => {
+    try {
+      // Use a CORS proxy to fetch Instagram data
+      const proxyUrl = 'https://api.allorigins.win/raw?url=';
+      const instagramUrl = encodeURIComponent(`https://www.instagram.com/${user}/?__a=1&__d=dis`);
+      
+      const response = await fetch(proxyUrl + instagramUrl, {
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+      
+      if (response.ok) {
+        const text = await response.text();
+        try {
+          const data = JSON.parse(text);
+          if (data.graphql?.user) {
+            const userData = data.graphql.user;
+            return {
+              username: userData.username,
+              fullName: userData.full_name || userData.username,
+              profilePic: userData.profile_pic_url_hd || userData.profile_pic_url,
+              followers: formatNumber(userData.edge_followed_by?.count || 0),
+              following: formatNumber(userData.edge_follow?.count || 0),
+              posts: formatNumber(userData.edge_owner_to_timeline_media?.count || 0),
+              isVerified: userData.is_verified || false
+            };
+          }
+        } catch {
+          // JSON parse failed, try alternative method
+        }
+      }
+    } catch (error) {
+      console.log('Primary fetch failed, trying alternative...');
+    }
+
+    // Alternative: Try to get profile pic directly from Instagram CDN
+    try {
+      // Use Instagram's profile picture URL pattern
+      const picUrl = `https://instagram.com/${user}/`;
+      return {
+        username: user,
+        fullName: user,
+        profilePic: `https://unavatar.io/instagram/${user}`,
+        followers: '---',
+        following: '---',
+        posts: '---',
+        isVerified: false
+      };
+    } catch {
+      return null;
     }
   };
 
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUsernameChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     playKeystroke();
-    const value = e.target.value.replace('@', '').toLowerCase();
+    const value = e.target.value.replace('@', '').toLowerCase().trim();
     setUsername(value);
+
+    // Clear previous timeout
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
     
-    // Auto-search after typing
     if (value.length >= 3) {
-      const matchedProfile = instagramProfiles[value];
-      if (matchedProfile) {
-        setProfileData({
-          username: value,
-          ...matchedProfile
-        });
-        setSearchState('found');
-        playSuccessBeep();
-      } else {
-        // Generate random profile for any username
-        setProfileData({
-          username: value,
-          fullName: value.charAt(0).toUpperCase() + value.slice(1),
-          profilePic: `https://i.pravatar.cc/150?u=${value}`,
-          followers: `${Math.floor(Math.random() * 900) + 100}K`,
-          following: `${Math.floor(Math.random() * 900) + 100}`,
-          posts: `${Math.floor(Math.random() * 500) + 50}`
-        });
-        setSearchState('found');
-        playSuccessBeep();
-      }
+      setSearchState('searching');
+      
+      // Debounce the search
+      const timeout = setTimeout(async () => {
+        const profile = await fetchInstagramProfile(value);
+        
+        if (profile) {
+          setProfileData(profile);
+          setSearchState('found');
+          playSuccessBeep();
+        } else {
+          // Fallback with unavatar service for profile pic
+          setProfileData({
+            username: value,
+            fullName: value,
+            profilePic: `https://unavatar.io/instagram/${value}`,
+            followers: '---',
+            following: '---',
+            posts: '---',
+            isVerified: false
+          });
+          setSearchState('found');
+          playSuccessBeep();
+        }
+      }, 800);
+      
+      setSearchTimeout(timeout);
     } else {
       setSearchState('idle');
       setProfileData(null);
@@ -839,7 +875,12 @@ const InstagramSearchModule = () => {
       <div className="flex-1">
         <p className="text-xs text-muted-foreground uppercase mb-2">Perfis Sugeridos</p>
         <div className="space-y-2">
-          {['neymarjr', 'cristiano', 'leomessi', 'kimkardashian'].map((user) => (
+          {[
+            { user: 'neymarjr', name: 'Neymar Jr' },
+            { user: 'cristiano', name: 'Cristiano Ronaldo' },
+            { user: 'leomessi', name: 'Leo Messi' },
+            { user: 'kimkardashian', name: 'Kim Kardashian' }
+          ].map(({ user, name }) => (
             <button 
               key={user}
               onClick={() => {
@@ -850,14 +891,14 @@ const InstagramSearchModule = () => {
             >
               <div className="w-8 h-8 rounded-full overflow-hidden">
                 <img 
-                  src={`https://i.pravatar.cc/32?u=${user}`} 
+                  src={`https://unavatar.io/instagram/${user}`} 
                   alt={user}
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="flex-1">
                 <p className="text-xs text-foreground font-bold">@{user}</p>
-                <p className="text-xs text-muted-foreground">{instagramProfiles[user]?.fullName || user}</p>
+                <p className="text-xs text-muted-foreground">{name}</p>
               </div>
               <Search className="w-3 h-3 text-muted-foreground" />
             </button>
