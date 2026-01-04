@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   MessageSquare, 
   Lock, 
@@ -12,7 +12,10 @@ import {
   User,
   Phone,
   ShieldX,
-  X
+  X,
+  Instagram,
+  Copy,
+  Loader2
 } from 'lucide-react';
 import { playWarningBeep, playErrorAlarm, playSuccessBeep, playKeystroke } from '@/lib/sounds';
 
@@ -505,29 +508,380 @@ const FakeCallLog = () => {
   );
 };
 
+// Instagram Profile Search Module
+const InstagramSearchModule = () => {
+  const [username, setUsername] = useState('');
+  const [searchState, setSearchState] = useState<'idle' | 'searching' | 'found' | 'cloning' | 'blocked'>('idle');
+  const [profileData, setProfileData] = useState<{
+    username: string;
+    fullName: string;
+    profilePic: string;
+    followers: string;
+    following: string;
+    posts: string;
+  } | null>(null);
+
+  // Simulated Instagram profiles database
+  const instagramProfiles: Record<string, {
+    fullName: string;
+    profilePic: string;
+    followers: string;
+    following: string;
+    posts: string;
+  }> = {
+    'neymarjr': {
+      fullName: 'Neymar Jr',
+      profilePic: 'https://i.pravatar.cc/150?img=33',
+      followers: '223M',
+      following: '865',
+      posts: '1.892'
+    },
+    'neymar': {
+      fullName: 'Neymar Jr 🇧🇷',
+      profilePic: 'https://i.pravatar.cc/150?img=33',
+      followers: '223M',
+      following: '865',
+      posts: '1.892'
+    },
+    'cristiano': {
+      fullName: 'Cristiano Ronaldo',
+      profilePic: 'https://i.pravatar.cc/150?img=12',
+      followers: '634M',
+      following: '582',
+      posts: '3.692'
+    },
+    'leomessi': {
+      fullName: 'Leo Messi',
+      profilePic: 'https://i.pravatar.cc/150?img=68',
+      followers: '497M',
+      following: '318',
+      posts: '1.127'
+    },
+    'kimkardashian': {
+      fullName: 'Kim Kardashian',
+      profilePic: 'https://i.pravatar.cc/150?img=47',
+      followers: '364M',
+      following: '243',
+      posts: '6.982'
+    }
+  };
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    playKeystroke();
+    const value = e.target.value.replace('@', '').toLowerCase();
+    setUsername(value);
+    
+    // Auto-search after typing
+    if (value.length >= 3) {
+      const matchedProfile = instagramProfiles[value];
+      if (matchedProfile) {
+        setProfileData({
+          username: value,
+          ...matchedProfile
+        });
+        setSearchState('found');
+        playSuccessBeep();
+      } else {
+        // Generate random profile for any username
+        setProfileData({
+          username: value,
+          fullName: value.charAt(0).toUpperCase() + value.slice(1),
+          profilePic: `https://i.pravatar.cc/150?u=${value}`,
+          followers: `${Math.floor(Math.random() * 900) + 100}K`,
+          following: `${Math.floor(Math.random() * 900) + 100}`,
+          posts: `${Math.floor(Math.random() * 500) + 50}`
+        });
+        setSearchState('found');
+        playSuccessBeep();
+      }
+    } else {
+      setSearchState('idle');
+      setProfileData(null);
+    }
+  };
+
+  const handleClone = () => {
+    playWarningBeep();
+    setSearchState('cloning');
+
+    setTimeout(() => {
+      playErrorAlarm();
+      setSearchState('blocked');
+    }, 3000);
+  };
+
+  const handleReset = () => {
+    setSearchState('idle');
+    setUsername('');
+    setProfileData(null);
+  };
+
+  // Fake posts data
+  const fakePosts = [
+    { likes: '2.3M', comments: '45K', time: '2h' },
+    { likes: '1.8M', comments: '32K', time: '1d' },
+    { likes: '3.1M', comments: '67K', time: '3d' },
+    { likes: '956K', comments: '23K', time: '5d' },
+    { likes: '2.7M', comments: '89K', time: '1w' },
+    { likes: '1.2M', comments: '41K', time: '2w' },
+  ];
+
+  if (searchState === 'blocked') {
+    return (
+      <div className="module-card cut-corners-lg h-full flex flex-col relative overflow-hidden">
+        {/* Blocked overlay */}
+        <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6">
+          <div className="relative mb-4">
+            <ShieldX className="w-16 h-16 text-destructive animate-pulse" />
+          </div>
+          <h3 className="text-lg font-bold text-destructive text-glow uppercase mb-2">
+            CLONAGEM BLOQUEADA
+          </h3>
+          <p className="text-xs text-muted-foreground text-center mb-4">
+            Perfil localizado. Aguardando liberação de pagamento para concluir clonagem do perfil @{username}.
+          </p>
+          <div className="w-full space-y-2">
+            <button className="w-full py-3 font-mono text-xs uppercase tracking-wider font-bold border-2 bg-warning/20 border-warning text-warning cut-corners-sm hover:bg-warning hover:text-background transition-all">
+              LIBERAR CLONAGEM - R$ 499,90
+            </button>
+            <button 
+              onClick={handleReset}
+              className="w-full py-2 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground transition-all flex items-center justify-center gap-2"
+            >
+              <X className="w-3 h-3" />
+              Cancelar Operação
+            </button>
+          </div>
+        </div>
+
+        {/* Background content (blurred) */}
+        <div className="blur-md opacity-50">
+          <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border">
+            <div className="text-pink-500"><Instagram className="w-5 h-5" /></div>
+            <h3 className="text-sm font-bold text-primary uppercase tracking-wider">
+              Clonando Perfil
+            </h3>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {fakePosts.map((_, i) => (
+              <div key={i} className="aspect-square bg-muted/50 border border-border/50" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (searchState === 'cloning') {
+    return (
+      <div className="module-card cut-corners-lg h-full flex flex-col">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border">
+          <div className="text-pink-500"><Instagram className="w-5 h-5" /></div>
+          <h3 className="text-sm font-bold text-primary text-glow uppercase tracking-wider">
+            Clonando Perfil
+          </h3>
+        </div>
+
+        {/* Loading animation */}
+        <div className="flex-1 flex flex-col items-center justify-center py-8">
+          <div className="relative mb-6">
+            <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-pink-500/50">
+              <img 
+                src={profileData?.profilePic} 
+                alt="Profile" 
+                className="w-full h-full object-cover animate-pulse"
+              />
+            </div>
+            <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-background border-2 border-pink-500 rounded-full flex items-center justify-center">
+              <Loader2 className="w-4 h-4 text-pink-500 animate-spin" />
+            </div>
+          </div>
+          
+          <p className="text-xs text-pink-500 font-mono mb-2">@{username}</p>
+          
+          <div className="space-y-1 text-center">
+            <p className="text-xs text-secondary animate-pulse">Extraindo dados do perfil...</p>
+            <p className="text-xs text-muted-foreground font-mono animate-typing overflow-hidden whitespace-nowrap">
+              BYPASS: API_GRAPH...COPIANDO
+            </p>
+          </div>
+
+          {/* Progress bars */}
+          <div className="w-full mt-6 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Fotos</span>
+              <span className="text-pink-500">67%</span>
+            </div>
+            <div className="h-1 bg-muted rounded overflow-hidden">
+              <div className="h-full bg-pink-500 animate-[loading_1.5s_ease-in-out_infinite]" style={{ width: '67%' }} />
+            </div>
+            
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Stories</span>
+              <span className="text-secondary">34%</span>
+            </div>
+            <div className="h-1 bg-muted rounded overflow-hidden">
+              <div className="h-full bg-secondary animate-[loading_2s_ease-in-out_infinite]" style={{ width: '34%' }} />
+            </div>
+
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">DMs Privadas</span>
+              <span className="text-destructive">12%</span>
+            </div>
+            <div className="h-1 bg-muted rounded overflow-hidden">
+              <div className="h-full bg-destructive animate-[loading_2.5s_ease-in-out_infinite]" style={{ width: '12%' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (searchState === 'found' && profileData) {
+    return (
+      <div className="module-card cut-corners-lg h-full flex flex-col">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border">
+          <div className="text-pink-500"><Instagram className="w-5 h-5" /></div>
+          <h3 className="text-sm font-bold text-primary text-glow uppercase tracking-wider">
+            Perfil Localizado
+          </h3>
+        </div>
+
+        {/* Profile info */}
+        <div className="flex items-center gap-4 p-3 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-orange-500/10 border border-pink-500/30 mb-4">
+          <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-pink-500 p-0.5">
+            <img 
+              src={profileData.profilePic} 
+              alt={profileData.username}
+              className="w-full h-full object-cover rounded-full"
+            />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-bold text-foreground">{profileData.fullName}</p>
+            <p className="text-xs text-pink-500 font-mono">@{profileData.username}</p>
+            <div className="flex gap-3 mt-1 text-xs text-muted-foreground">
+              <span><strong className="text-foreground">{profileData.posts}</strong> posts</span>
+              <span><strong className="text-foreground">{profileData.followers}</strong> seg.</span>
+            </div>
+          </div>
+          <div className="status-dot status-dot-active" />
+        </div>
+
+        {/* Posts preview (blurred) */}
+        <div className="flex-1">
+          <p className="text-xs text-muted-foreground uppercase mb-2">Publicações Recentes</p>
+          <div className="grid grid-cols-3 gap-1.5">
+            {fakePosts.map((post, i) => (
+              <div key={i} className="relative aspect-square bg-muted/30 border border-border/50 overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 via-purple-500/20 to-orange-500/20 blur-[2px]" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-background/60 transition-opacity">
+                  <div className="text-center text-xs">
+                    <p className="text-foreground font-bold blur-[3px]">{post.likes}</p>
+                    <p className="text-muted-foreground blur-[3px]">{post.comments}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="mt-4 pt-3 border-t border-border space-y-2">
+          <div className="flex items-center gap-2 text-xs text-destructive">
+            <Lock className="w-3 h-3" />
+            <span>Perfil privado detectado</span>
+          </div>
+          
+          <button 
+            onClick={handleClone}
+            className="w-full py-3 font-mono text-xs uppercase tracking-wider font-bold border-2 bg-pink-500/10 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white cut-corners-sm flex items-center justify-center gap-2 transition-all"
+          >
+            <Copy className="w-4 h-4" />
+            Clonar Instagram
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Default idle state - username input
+  return (
+    <div className="module-card cut-corners-lg h-full flex flex-col">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border">
+        <div className="text-pink-500"><Instagram className="w-5 h-5" /></div>
+        <h3 className="text-sm font-bold text-primary text-glow uppercase tracking-wider">
+          Varredura de Perfil Instagram
+        </h3>
+      </div>
+
+      {/* Username input */}
+      <div className="mb-4">
+        <label className="block text-xs text-muted-foreground uppercase mb-2">
+          Nome de Usuário do Alvo
+        </label>
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-pink-500 text-sm font-bold">@</span>
+          <input
+            type="text"
+            value={username}
+            onChange={handleUsernameChange}
+            placeholder="neymarjr"
+            className="w-full pl-8 pr-4 py-3 bg-muted/20 border-2 border-pink-500/50 focus:border-pink-500 text-foreground font-mono text-sm placeholder:text-muted-foreground focus:outline-none transition-all"
+          />
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">Digite o @ do perfil para localizar</p>
+      </div>
+
+      {/* Suggestions */}
+      <div className="flex-1">
+        <p className="text-xs text-muted-foreground uppercase mb-2">Perfis Sugeridos</p>
+        <div className="space-y-2">
+          {['neymarjr', 'cristiano', 'leomessi', 'kimkardashian'].map((user) => (
+            <button 
+              key={user}
+              onClick={() => {
+                setUsername(user);
+                handleUsernameChange({ target: { value: user } } as React.ChangeEvent<HTMLInputElement>);
+              }}
+              className="w-full flex items-center gap-3 p-2 bg-muted/30 border border-border/50 hover:border-pink-500/50 transition-all text-left"
+            >
+              <div className="w-8 h-8 rounded-full overflow-hidden">
+                <img 
+                  src={`https://i.pravatar.cc/32?u=${user}`} 
+                  alt={user}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-foreground font-bold">@{user}</p>
+                <p className="text-xs text-muted-foreground">{instagramProfiles[user]?.fullName || user}</p>
+              </div>
+              <Search className="w-3 h-3 text-muted-foreground" />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Encryption indicator */}
+      <div className="flex items-center gap-2 text-xs text-destructive my-3">
+        <Lock className="w-3 h-3" />
+        <span>Varredura Anônima Ativa</span>
+      </div>
+    </div>
+  );
+};
+
 const DashboardModules = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
       {/* WhatsApp Module - Custom with full flow */}
       <WhatsAppSearchModule />
 
-      {/* Social Media Module */}
-      <ModuleCard
-        title="Varredura de Redes Sociais"
-        icon={
-          <div className="relative">
-            <AtSign className="w-5 h-5" />
-            <Search className="w-3 h-3 absolute -bottom-1 -right-1 text-secondary" />
-          </div>
-        }
-        buttonText="Iniciar Varredura de Perfil"
-        buttonVariant="secondary"
-      >
-        <div className="space-y-2">
-          <p className="text-xs text-muted-foreground uppercase">Atividade Recente</p>
-          <FakeActivityChart />
-        </div>
-      </ModuleCard>
+      {/* Instagram Module - Custom with full flow */}
+      <InstagramSearchModule />
 
       {/* GPS Module */}
       <ModuleCard
