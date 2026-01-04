@@ -1157,46 +1157,49 @@ const InstagramSearchModule = () => {
   );
 };
 
+// Import spy modules
+import { 
+  GeolocationModule, 
+  CameraViewerModule, 
+  AudioAnalyzerModule, 
+  KeyloggerModule, 
+  MediaGalleryModule, 
+  TargetStatusModule,
+  CommandConsoleModule 
+} from './SpyModules';
+
 const DashboardModules = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-      {/* WhatsApp Module - Custom with full flow */}
-      <WhatsAppSearchModule />
+    <div className="space-y-6">
+      {/* Target Status Bar */}
+      <TargetStatusModule />
 
-      {/* Instagram Module - Custom with full flow */}
-      <InstagramSearchModule />
+      {/* Main modules grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+        {/* WhatsApp Module - Custom with full flow */}
+        <WhatsAppSearchModule />
 
-      {/* GPS Module */}
-      <ModuleCard
-        title="Rastreamento de Localização GPS"
-        icon={
-          <div className="relative">
-            <MapPin className="w-5 h-5" />
-            <Radio className="w-3 h-3 absolute -top-1 -right-1 text-secondary animate-pulse" />
-          </div>
-        }
-        buttonText="Triangular Sinal ao Vivo"
-        buttonVariant="primary"
-        errorMessage="AGUARDANDO SINAL DO DISPOSITIVO ALVO..."
-      >
-        <FakeGPSMap />
-      </ModuleCard>
+        {/* Instagram Module - Custom with full flow */}
+        <InstagramSearchModule />
 
-      {/* Call Log Module */}
-      <ModuleCard
-        title="Registro de Chamadas e Áudio"
-        icon={<AudioWaveform className="w-5 h-5" />}
-        buttonText="Acessar Arquivo Morto"
-        buttonVariant="secondary"
-      >
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Clock className="w-3 h-3" />
-            <span>Últimas 24 horas</span>
-          </div>
-          <FakeCallLog />
-        </div>
-      </ModuleCard>
+        {/* Geolocation Module */}
+        <GeolocationModule />
+
+        {/* Camera Viewer Module */}
+        <CameraViewerModule />
+
+        {/* Audio Analyzer Module */}
+        <AudioAnalyzerModule />
+
+        {/* Keylogger Module */}
+        <KeyloggerModule />
+
+        {/* Media Gallery Module */}
+        <MediaGalleryModule />
+
+        {/* Command Console Module */}
+        <CommandConsoleModule />
+      </div>
     </div>
   );
 };
