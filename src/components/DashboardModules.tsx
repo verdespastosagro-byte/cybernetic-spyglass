@@ -10,9 +10,11 @@ import {
   Clock,
   AlertTriangle,
   User,
-  Phone
+  Phone,
+  ShieldX,
+  X
 } from 'lucide-react';
-import { playWarningBeep, playErrorAlarm } from '@/lib/sounds';
+import { playWarningBeep, playErrorAlarm, playSuccessBeep, playKeystroke } from '@/lib/sounds';
 
 interface ModuleCardProps {
   title: string;
@@ -103,7 +105,293 @@ const ModuleCard = ({
   );
 };
 
-// Fake contact list for WhatsApp module
+// WhatsApp Search Module with full flow
+const WhatsAppSearchModule = () => {
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [searchState, setSearchState] = useState<'idle' | 'searching' | 'found' | 'blocked'>('idle');
+
+  const formatPhone = (value: string) => {
+    const numbers = value.replace(/\D/g, '');
+    const limited = numbers.slice(0, 11);
+    
+    if (limited.length <= 2) return limited;
+    if (limited.length <= 7) return `(${limited.slice(0, 2)}) ${limited.slice(2)}`;
+    return `(${limited.slice(0, 2)}) ${limited.slice(2, 7)}-${limited.slice(7)}`;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    playKeystroke();
+    setPhoneNumber(formatPhone(e.target.value));
+  };
+
+  const handleSearch = () => {
+    if (phoneNumber.replace(/\D/g, '').length < 10) {
+      playWarningBeep();
+      return;
+    }
+
+    playSuccessBeep();
+    setSearchState('searching');
+
+    // Simulate search progress
+    setTimeout(() => {
+      setSearchState('found');
+    }, 2500);
+
+    // Show blocked screen
+    setTimeout(() => {
+      playErrorAlarm();
+      setSearchState('blocked');
+    }, 4500);
+  };
+
+  const handleReset = () => {
+    setSearchState('idle');
+    setPhoneNumber('');
+  };
+
+  // Fake messages data
+  const fakeMessages = [
+    { from: 'Alvo', text: 'Oi, tudo bem? Preciso falar com você sobre...', time: '14:32', unread: true },
+    { from: 'Você', text: 'Claro, pode falar! Estou disponível agora...', time: '14:30', unread: false },
+    { from: 'Alvo', text: 'Amanhã às 15h no local combinado, ok?', time: '13:45', unread: false },
+    { from: 'Você', text: 'Perfeito! Levo os documentos que você pediu...', time: '13:40', unread: false },
+    { from: 'Alvo', text: 'Não esquece de trazer aquilo que te pedi...', time: '12:22', unread: false },
+  ];
+
+  const fakeContacts = [
+    { name: 'Maria Silva', lastMsg: 'Ok, te vejo lá!', time: '14:32', photo: '👩' },
+    { name: 'João Pedro', lastMsg: 'Mandei o arquivo...', time: '13:15', photo: '👨' },
+    { name: 'Ana Costa', lastMsg: 'Obrigada!', time: '11:48', photo: '👩‍💼' },
+    { name: 'Carlos M.', lastMsg: 'Vamos confirmar...', time: '09:22', photo: '👨‍💻' },
+  ];
+
+  if (searchState === 'blocked') {
+    return (
+      <div className="module-card cut-corners-lg h-full flex flex-col relative overflow-hidden">
+        {/* Blocked overlay */}
+        <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6">
+          <div className="relative mb-4">
+            <ShieldX className="w-16 h-16 text-destructive animate-pulse" />
+          </div>
+          <h3 className="text-lg font-bold text-destructive text-glow uppercase mb-2">
+            ACESSO NEGADO
+          </h3>
+          <p className="text-xs text-muted-foreground text-center mb-4">
+            Aguardando confirmação de pagamento para liberar acesso completo aos dados interceptados.
+          </p>
+          <div className="w-full space-y-2">
+            <button className="w-full py-3 font-mono text-xs uppercase tracking-wider font-bold border-2 bg-warning/20 border-warning text-warning cut-corners-sm hover:bg-warning hover:text-background transition-all">
+              DESBLOQUEAR AGORA - R$ 299,90
+            </button>
+            <button 
+              onClick={handleReset}
+              className="w-full py-2 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground transition-all flex items-center justify-center gap-2"
+            >
+              <X className="w-3 h-3" />
+              Cancelar Operação
+            </button>
+          </div>
+        </div>
+
+        {/* Background content (blurred) */}
+        <div className="blur-md opacity-50">
+          <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border">
+            <div className="text-primary"><MessageSquare className="w-5 h-5" /></div>
+            <h3 className="text-sm font-bold text-primary uppercase tracking-wider">
+              Dados Interceptados
+            </h3>
+          </div>
+          <div className="space-y-2">
+            {fakeMessages.map((msg, i) => (
+              <div key={i} className="p-2 bg-muted/30 border border-border/50">
+                <p className="text-xs text-muted-foreground">{msg.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (searchState === 'found') {
+    return (
+      <div className="module-card cut-corners-lg h-full flex flex-col">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border">
+          <div className="text-primary"><MessageSquare className="w-5 h-5" /></div>
+          <h3 className="text-sm font-bold text-primary text-glow uppercase tracking-wider">
+            Dados Encontrados
+          </h3>
+        </div>
+
+        {/* Target info */}
+        <div className="flex items-center gap-3 p-2 bg-primary/10 border border-primary/30 mb-4">
+          <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-lg">
+            📱
+          </div>
+          <div className="flex-1">
+            <p className="text-xs text-primary font-bold">{phoneNumber}</p>
+            <p className="text-xs text-secondary">WhatsApp Ativo • Online</p>
+          </div>
+          <div className="status-dot status-dot-active" />
+        </div>
+
+        {/* Blurred messages preview */}
+        <div className="flex-1 space-y-2 relative">
+          <p className="text-xs text-muted-foreground uppercase mb-2">Mensagens Recentes</p>
+          {fakeMessages.map((msg, i) => (
+            <div 
+              key={i} 
+              className={`p-2 border border-border/50 ${msg.from === 'Alvo' ? 'bg-muted/30' : 'bg-primary/5 ml-4'}`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-secondary font-bold blur-[2px]">{msg.from}</span>
+                <span className="text-xs text-muted-foreground">{msg.time}</span>
+              </div>
+              <p className="text-xs text-foreground blur-[3px]">{msg.text}</p>
+            </div>
+          ))}
+          
+          {/* Overlay hint */}
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-background via-transparent to-transparent pointer-events-none">
+            <div className="bg-background/80 px-4 py-2 border border-warning/50 text-xs text-warning animate-pulse">
+              Decodificando mensagens...
+            </div>
+          </div>
+        </div>
+
+        {/* Loading indicator */}
+        <div className="mt-4 pt-3 border-t border-border">
+          <div className="flex items-center gap-2 text-xs text-warning">
+            <span className="animate-spin">◐</span>
+            <span>Carregando dados criptografados...</span>
+          </div>
+          <div className="mt-2 h-1 bg-muted rounded overflow-hidden">
+            <div className="h-full bg-warning animate-[loading_2s_ease-in-out_infinite]" style={{ width: '75%' }} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (searchState === 'searching') {
+    return (
+      <div className="module-card cut-corners-lg h-full flex flex-col">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border">
+          <div className="text-primary"><MessageSquare className="w-5 h-5" /></div>
+          <h3 className="text-sm font-bold text-primary text-glow uppercase tracking-wider">
+            Buscando Dispositivo
+          </h3>
+        </div>
+
+        {/* Loading animation */}
+        <div className="flex-1 flex flex-col items-center justify-center py-8">
+          <div className="relative mb-6">
+            <div className="w-20 h-20 border-2 border-primary/30 rounded-full animate-ping absolute" />
+            <div className="w-20 h-20 border-2 border-primary rounded-full flex items-center justify-center">
+              <Phone className="w-8 h-8 text-primary animate-pulse" />
+            </div>
+          </div>
+          
+          <p className="text-xs text-primary font-mono mb-2">{phoneNumber}</p>
+          
+          <div className="space-y-1 text-center">
+            <p className="text-xs text-secondary animate-pulse">Localizando dispositivo...</p>
+            <p className="text-xs text-muted-foreground font-mono animate-typing overflow-hidden whitespace-nowrap">
+              HANDSHAKE: 0x7F3A...CONECTANDO
+            </p>
+          </div>
+
+          {/* Progress bars */}
+          <div className="w-full mt-6 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Conexão P2P</span>
+              <span className="text-primary">78%</span>
+            </div>
+            <div className="h-1 bg-muted rounded overflow-hidden">
+              <div className="h-full bg-primary animate-[loading_1.5s_ease-in-out_infinite]" style={{ width: '78%' }} />
+            </div>
+            
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Bypass SSL</span>
+              <span className="text-secondary">45%</span>
+            </div>
+            <div className="h-1 bg-muted rounded overflow-hidden">
+              <div className="h-full bg-secondary animate-[loading_2s_ease-in-out_infinite]" style={{ width: '45%' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Default idle state - phone input
+  return (
+    <div className="module-card cut-corners-lg h-full flex flex-col">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border">
+        <div className="text-primary"><MessageSquare className="w-5 h-5" /></div>
+        <h3 className="text-sm font-bold text-primary text-glow uppercase tracking-wider">
+          Interceptação WhatsApp/Mensagens
+        </h3>
+      </div>
+
+      {/* Phone input */}
+      <div className="mb-4">
+        <label className="block text-xs text-muted-foreground uppercase mb-2">
+          Número do Alvo (WhatsApp)
+        </label>
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-sm">+55</span>
+          <input
+            type="text"
+            value={phoneNumber}
+            onChange={handlePhoneChange}
+            placeholder="(00) 00000-0000"
+            className="w-full pl-12 pr-4 py-3 bg-muted/20 border-2 border-primary/50 focus:border-primary text-foreground font-mono text-sm placeholder:text-muted-foreground focus:outline-none focus:border-glow transition-all"
+          />
+        </div>
+      </div>
+
+      {/* Contact list preview */}
+      <div className="flex-1">
+        <p className="text-xs text-muted-foreground uppercase mb-2">Alvos Recentes (Borrado)</p>
+        <div className="space-y-2">
+          {fakeContacts.map((contact, i) => (
+            <div key={i} className="flex items-center gap-3 p-2 bg-muted/30 border border-border/50">
+              <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center text-sm blur-[2px]">
+                {contact.photo}
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-foreground font-bold blur-[3px]">{contact.name}</p>
+                <p className="text-xs text-muted-foreground blur-[4px]">{contact.lastMsg}</p>
+              </div>
+              <span className="text-xs text-secondary">{contact.time}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Encryption indicator */}
+      <div className="flex items-center gap-2 text-xs text-destructive my-3">
+        <Lock className="w-3 h-3" />
+        <span>Criptografia Ativa</span>
+      </div>
+
+      {/* Action Button */}
+      <button 
+        onClick={handleSearch}
+        className="w-full py-3 font-mono text-xs uppercase tracking-wider font-bold border-2 bg-primary/10 border-primary text-primary hover:bg-primary hover:text-background border-glow transition-all cut-corners-sm flex items-center justify-center gap-2"
+      >
+        Tentar Conexão P2P
+      </button>
+    </div>
+  );
+};
+
+// Fake contact list for WhatsApp module (kept for reference but not used anymore)
 const FakeContactList = () => {
   const contacts = [
     { name: '████████', time: '14:32', blur: true },
@@ -220,15 +508,8 @@ const FakeCallLog = () => {
 const DashboardModules = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-      {/* WhatsApp Module */}
-      <ModuleCard
-        title="Interceptação WhatsApp/Mensagens"
-        icon={<MessageSquare className="w-5 h-5" />}
-        buttonText="Tentar Conexão P2P"
-        buttonVariant="primary"
-      >
-        <FakeContactList />
-      </ModuleCard>
+      {/* WhatsApp Module - Custom with full flow */}
+      <WhatsAppSearchModule />
 
       {/* Social Media Module */}
       <ModuleCard
