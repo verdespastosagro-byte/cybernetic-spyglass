@@ -134,22 +134,22 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
               <Lock className="w-8 h-8 text-warning animate-pulse" />
             </div>
             <h2 className="text-xl font-bold text-warning uppercase tracking-wider mb-2" style={{ textShadow: '0 0 20px hsl(45 100% 50%)' }}>
-              Acesso Restrito
+              Relatório de Inteligência
             </h2>
             <p className="text-sm text-muted-foreground">
-              Alvo localizado. Pagamento necessário para liberar monitoramento completo.
+              Desbloqueie os dados ocultos deste número agora.
             </p>
           </div>
 
           {/* Target Info */}
-          <div className="bg-muted/20 border border-border p-3 mb-6">
+          <div className="bg-muted/20 border border-border p-3 mb-4">
             <div className="flex items-center justify-between text-xs mb-2">
               <span className="text-muted-foreground">Número do Alvo:</span>
               <span className="text-destructive font-mono">{targetPhone}</span>
             </div>
             {targetName && (
               <div className="flex items-center justify-between text-xs mb-2">
-                <span className="text-muted-foreground">Nome:</span>
+                <span className="text-muted-foreground">Nome Detectado:</span>
                 <span className="text-primary font-mono">{targetName}</span>
               </div>
             )}
@@ -157,38 +157,62 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
               <span className="text-muted-foreground">Status:</span>
               <span className="text-warning font-mono flex items-center gap-1">
                 <span className="w-2 h-2 bg-warning rounded-full animate-pulse" />
-                AGUARDANDO LIBERAÇÃO
+                DADOS BLOQUEADOS
               </span>
             </div>
           </div>
 
-          {/* Features to unlock */}
-          <div className="grid grid-cols-2 gap-2 mb-6 text-xs">
-            <div className="flex items-center gap-2 p-2 bg-primary/5 border border-primary/30">
-              <span className="text-primary">📱</span>
-              <span className="text-muted-foreground">WhatsApp Completo</span>
-            </div>
-            <div className="flex items-center gap-2 p-2 bg-secondary/5 border border-secondary/30">
-              <span className="text-secondary">📍</span>
-              <span className="text-muted-foreground">GPS em Tempo Real</span>
-            </div>
-            <div className="flex items-center gap-2 p-2 bg-pink-500/5 border border-pink-500/30">
-              <span className="text-pink-500">📸</span>
-              <span className="text-muted-foreground">Instagram/Galeria</span>
-            </div>
-            <div className="flex items-center gap-2 p-2 bg-warning/5 border border-warning/30">
-              <span className="text-warning">🎤</span>
-              <span className="text-muted-foreground">Áudio/Câmera</span>
+          {/* What's included */}
+          <div className="mb-4">
+            <p className="text-xs text-primary uppercase mb-3 font-bold tracking-wider text-center">
+              🔓 O que este relatório único inclui:
+            </p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 p-2 bg-primary/5 border border-primary/30">
+                <span className="text-primary">📍</span>
+                <div>
+                  <span className="text-foreground text-sm font-medium">Localização em Tempo Real</span>
+                  <p className="text-xs text-muted-foreground">GPS visual com mapa interativo</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-2 bg-secondary/5 border border-secondary/30">
+                <span className="text-secondary">💬</span>
+                <div>
+                  <span className="text-foreground text-sm font-medium">Histórico de Conversas</span>
+                  <p className="text-xs text-muted-foreground">Simulação de recuperação de mensagens</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-2 bg-pink-500/5 border border-pink-500/30">
+                <span className="text-pink-500">📋</span>
+                <div>
+                  <span className="text-foreground text-sm font-medium">Dados de Cadastro</span>
+                  <p className="text-xs text-muted-foreground">Informações vinculadas ao número</p>
+                </div>
+              </div>
             </div>
           </div>
 
+          {/* How it works */}
+          <div className="bg-muted/10 border border-border/50 p-3 mb-4 text-xs">
+            <p className="text-primary font-bold uppercase mb-2">⚡ Como funciona:</p>
+            <ol className="space-y-1 text-muted-foreground list-decimal list-inside">
+              <li>Realize o pagamento via PIX ou Kiwify</li>
+              <li>Clique em "Já Paguei" para liberar</li>
+              <li>Os dados aparecem na tela imediatamente</li>
+            </ol>
+            <p className="mt-2 text-xs text-warning">✓ Consulta única • Anônimo • Imediato</p>
+          </div>
+
           {/* Price */}
-          <div className="text-center mb-6">
-            <p className="text-xs text-muted-foreground uppercase mb-1">Valor Único</p>
-            <p className="text-4xl font-bold text-primary" style={{ textShadow: '0 0 30px hsl(120 100% 55%)' }}>
-              R$ 99,90
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">Acesso vitalício • Sem mensalidades</p>
+          <div className="text-center mb-4">
+            <p className="text-xs text-muted-foreground uppercase mb-1">Consulta Única</p>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-lg text-muted-foreground line-through">R$ 49,90</span>
+              <p className="text-4xl font-bold text-primary" style={{ textShadow: '0 0 30px hsl(120 100% 55%)' }}>
+                R$ 14,90
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Pagamento único • Sem assinatura</p>
           </div>
 
           {/* QR Code */}
