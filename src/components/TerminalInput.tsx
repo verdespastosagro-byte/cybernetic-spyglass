@@ -1,11 +1,17 @@
 import { forwardRef } from 'react';
+import { playKeystroke } from '@/lib/sounds';
 
 interface TerminalInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
 }
 
 const TerminalInput = forwardRef<HTMLInputElement, TerminalInputProps>(
-  ({ label, className, ...props }, ref) => {
+  ({ label, className, onChange, ...props }, ref) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      playKeystroke();
+      onChange?.(e);
+    };
+
     return (
       <div className="space-y-2">
         <label className="block text-xs uppercase tracking-wider text-muted-foreground">
@@ -26,6 +32,7 @@ const TerminalInput = forwardRef<HTMLInputElement, TerminalInputProps>(
               pixelated-border
               ${className}
             `}
+            onChange={handleChange}
             {...props}
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-primary animate-blink">
