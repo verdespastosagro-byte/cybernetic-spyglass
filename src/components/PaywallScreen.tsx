@@ -11,6 +11,13 @@ interface PaywallScreenProps {
   targetName?: string;
 }
 
+// Declare fbq type for TypeScript
+declare global {
+  interface Window {
+    fbq: (...args: unknown[]) => void;
+  }
+}
+
 const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }: PaywallScreenProps) => {
   const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState(900); // 15 minutes in seconds
@@ -21,6 +28,18 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
 
   // Kiwify checkout URL
   const defaultKiwifyUrl = 'https://pay.kiwify.com.br/8zPiNDF';
+
+  // Track InitiateCheckout when paywall is shown
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'InitiateCheckout', {
+        content_name: 'Relatório de Inteligência',
+        content_ids: [targetPhone],
+        value: 14.90,
+        currency: 'BRL'
+      });
+    }
+  }, [targetPhone]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -68,6 +87,15 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
         .limit(1);
 
       if (data && data.length > 0) {
+        // Track Purchase conversion
+        if (typeof window !== 'undefined' && window.fbq) {
+          window.fbq('track', 'Purchase', {
+            content_name: 'Relatório de Inteligência',
+            content_ids: [targetPhone],
+            value: 14.90,
+            currency: 'BRL'
+          });
+        }
         playSuccessBeep();
         onPaymentConfirmed();
       }
@@ -97,6 +125,15 @@ const PaywallScreen = ({ onPaymentConfirmed, onCancel, targetPhone, targetName }
       }
 
       if (data && data.length > 0) {
+        // Track Purchase conversion
+        if (typeof window !== 'undefined' && window.fbq) {
+          window.fbq('track', 'Purchase', {
+            content_name: 'Relatório de Inteligência',
+            content_ids: [targetPhone],
+            value: 14.90,
+            currency: 'BRL'
+          });
+        }
         playSuccessBeep();
         onPaymentConfirmed();
       } else {
